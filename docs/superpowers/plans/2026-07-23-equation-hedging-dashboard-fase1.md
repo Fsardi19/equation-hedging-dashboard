@@ -8,6 +8,8 @@
 
 **Tech Stack:** Next.js 15, React 19, TypeScript 5, Tailwind CSS 3 + shadcn/ui, Vitest 2 (unit tests de dominio), @supabase/supabase-js 2 + @supabase/ssr, exceljs 4 (export), TanStack Table 8 (libro).
 
+> **ENMIENDA (2026-07-28) — MVP local-first:** por decisión de flujo (MVP local → probar con Felipe → migrar a GitHub para devs), la Fase 1 se construye primero con una **capa de datos local** (store en archivo JSON detrás de una interfaz `DataStore`), para poder correr `npm run dev` y testear sin montar Supabase. Auth y RLS (Tasks 7–8) se aplazan al momento de migrar: la implementación `SupabaseDataStore` reemplaza a `LocalDataStore` sin tocar UI ni dominio. En el MVP local NO hay login (un solo "usuario ADMIN implícito"); los roles/RLS entran al conectar Supabase, antes de subir a GitHub. El resto del plan (dominio, UI, export) se ejecuta igual.
+
 ## Global Constraints
 
 - **Node** ≥ 20. Gestor de paquetes: **npm**.
