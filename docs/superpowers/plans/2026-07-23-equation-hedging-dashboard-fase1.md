@@ -10,6 +10,13 @@
 
 > **ENMIENDA (2026-07-28) — MVP local-first:** por decisión de flujo (MVP local → probar con Felipe → migrar a GitHub para devs), la Fase 1 se construye primero con una **capa de datos local** (store en archivo JSON detrás de una interfaz `DataStore`), para poder correr `npm run dev` y testear sin montar Supabase. Auth y RLS (Tasks 7–8) se aplazan al momento de migrar: la implementación `SupabaseDataStore` reemplaza a `LocalDataStore` sin tocar UI ni dominio. En el MVP local NO hay login (un solo "usuario ADMIN implícito"); los roles/RLS entran al conectar Supabase, antes de subir a GitHub. El resto del plan (dominio, UI, export) se ejecuta igual.
 
+> **ESTADO (2026-08-07) — MVP construido y publicado:**
+> - ✅ Capa de dominio con 18 tests verdes (units, coverage, pnl). Un bug de semáforo (FIJO sin cubrir salía amarillo) atrapado por TDD y corregido.
+> - ✅ MVP local Next.js: libro con semáforos+filtros, alta de contrato (sacos→lb), detalle con fijaciones/hedges/costos y 3 semáforos en vivo, counterparties, export Excel. Typecheck y build limpios.
+> - ✅ Versión standalone de **un solo `index.html`** (misma lógica en JS de navegador, datos en localStorage) para que el equipo de negocio pruebe con un clic. Export CSV.
+> - ✅ Publicado: repo **público** (decisión de Felipe) + **GitHub Pages en vivo** → https://fsardi19.github.io/equation-hedging-dashboard/
+> - ⏳ Siguiente: recoger feedback del equipo → implementar `SupabaseDataStore` + Auth + roles + RLS (retoma Tasks 6–8). Correo al equipo quedó redactado (no enviado: Gmail no conectado en la sesión).
+
 ## Global Constraints
 
 - **Node** ≥ 20. Gestor de paquetes: **npm**.
