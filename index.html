@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Equation Coffee — Cobertura (MVP)</title>
+<style>
+  :root { --amber:#b45309; --amber-d:#92400e; --bg:#f9fafb; --line:#e5e7eb; --muted:#6b7280; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:#111827; }
+  nav { display:flex; align-items:center; gap:16px; background:#fff; border-bottom:1px solid var(--line); padding:12px 16px; box-shadow:0 1px 2px rgba(0,0,0,.04); flex-wrap:wrap; }
+  nav a { color:var(--muted); text-decoration:none; font-size:14px; cursor:pointer; }
+  nav a:hover { color:#000; }
+  nav .brand { font-weight:600; color:var(--amber-d); }
+  nav .tag { margin-left:auto; background:#fef3c7; color:var(--amber-d); font-size:12px; padding:2px 8px; border-radius:6px; }
+  main { max-width:1000px; margin:0 auto; padding:16px; }
+  h1 { font-size:18px; font-weight:600; }
+  h2 { font-size:15px; font-weight:600; margin:0; }
+  .row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .spacer { margin-left:auto; }
+  button, .btn { cursor:pointer; border:none; border-radius:6px; padding:8px 14px; font-size:14px; }
+  .btn-primary { background:var(--amber); color:#fff; } .btn-primary:hover { background:var(--amber-d); }
+  .btn-dark { background:#1f2937; color:#fff; padding:6px 12px; } .btn-dark:hover { background:#000; }
+  .btn-ghost { background:#fff; border:1px solid var(--line); color:#111827; } .btn-ghost:hover { background:#f3f4f6; }
+  input, select, textarea { border:1px solid var(--line); border-radius:6px; padding:8px; font-size:14px; font-family:inherit; }
+  table { width:100%; border-collapse:collapse; font-size:14px; background:#fff; }
+  thead tr { background:#f9fafb; text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); }
+  th, td { padding:8px; border-bottom:1px solid var(--line); }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; }
+  .card.ok { background:#f0fdf4; border-color:#86efac; }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:640px; }
+  .col2 { grid-column:span 2; }
+  .dot { display:inline-block; width:11px; height:11px; border-radius:50%; vertical-align:middle; }
+  .VERDE { background:#22c55e; } .AMARILLO { background:#facc15; } .ROJO { background:#ef4444; }
+  .muted { color:var(--muted); font-size:12px; }
+  .big { font-size:20px; font-weight:600; }
+  .warn { color:#dc2626; font-weight:500; }
+  .pill { font-size:11px; padding:1px 6px; border-radius:4px; }
+  .link { color:#2563eb; text-decoration:underline; cursor:pointer; }
+  .empty { border:1px dashed var(--line); border-radius:8px; padding:32px; text-align:center; color:var(--muted); font-size:14px; }
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
+  label.field { display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--muted); }
+  section { margin-top:22px; }
+  .item { color:#374151; font-size:14px; padding:2px 0; }
+  @media (max-width:640px){ .grid3{grid-template-columns:1fr;} .grid2{grid-template-columns:1fr;} .col2{grid-column:span 1;} }
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" onclick="go('/libro')">☕ Equation — Cobertura</a>
+  <a onclick="go('/libro')">Libro</a>
+  <a onclick="go('/nuevo')">Nuevo contrato</a>
+  <a onclick="go('/counterparties')">Counterparties</a>
+  <span class="tag">MVP — datos en tu navegador</span>
+</nav>
+<main id="app"></main>
+
+<script>
+/* ============ LÓGICA DE DOMINIO (idéntica a la app; portada a JS) ============ */
+const LB_PER_KG = 2.2046226218;
+const KC_CONTRACT_LB = 37500;
+const COVERAGE_THRESHOLD = 0.95;
+
+const sacosToLb = (s, kg) => s * kg * LB_PER_KG;
+const lbToSacos = (lb, kg) => lb / (kg * LB_PER_KG);
+function kcEquivalents(lb) {
+  const contracts = lb / KC_CONTRACT_LB;
+  const wholeContracts = Math.round(contracts);
+  return { contracts, wholeContracts, residualLb: lb - wholeContracts * KC_CONTRACT_LB };
+}
+const expectedFlatDirection = (lado) => (lado === 'COMPRA' ? 'SHORT' : 'LONG');
+
+function pricedUsdValue(c, fixations) {
+  if (c.tipoPrecio === 'FIJO') return c.cantidadLb * (c.precioFijoUsdLb ?? 0);
+  const dif = c.diferencialUsdLb ?? 0;
+  return fixations.reduce((a, f) => a + f.cantidadLbFijada * (f.precioFuturoFijadoUsdLb + dif), 0);
+}
+function computePriceStatus(c, fixations) {
+  if (c.tipoPrecio === 'FIJO') return { pricedPct: 1, fixedLb: c.cantidadLb, unfixedLb: 0 };
+  const fixedLb = fixations.reduce((a, f) => a + f.cantidadLbFijada, 0);
+  const pricedPct = c.cantidadLb === 0 ? 0 : fixedLb / c.cantidadLb;
+  return { pricedPct, fixedLb, unfixedLb: Math.max(c.cantidadLb - fixedLb, 0) };
+}
+function computeFlatCoverage(c, hedges) {
+  const expected = expectedFlatDirection(c.lado);
+  const flat = hedges.filter(h => h.riesgoCubierto === 'PRECIO' && h.estado === 'ABIERTA');
+  const coveredLb = flat.filter(h => h.direccion === expected).reduce((a, h) => a + h.cantidadLb, 0);
+  const directionOk = flat.length === 0 || flat.every(h => h.direccion === expected);
+  const coveragePct = c.cantidadLb === 0 ? 0 : coveredLb / c.cantidadLb;
+  const { wholeContracts, residualLb } = kcEquivalents(coveredLb);
+  return { coveredLb, coveragePct, kcContracts: wholeContracts, residualLb, directionOk };
+}
+function computeFxCoverage(c, fixations, hedges) {
+  const exposureNotional = pricedUsdValue(c, fixations);
+  const coveredNotional = hedges.filter(h => h.riesgoCubierto === 'FX' && h.estado === 'ABIERTA').reduce((a, h) => a + h.cantidadLb, 0);
+  const coveragePct = exposureNotional === 0 ? 0 : coveredNotional / exposureNotional;
+  return { exposureNotional, coveredNotional, coveragePct };
+}
+function consolidatedStatus(c, fixations, hedges) {
+  const flat = computeFlatCoverage(c, hedges);
+  const fx = computeFxCoverage(c, fixations, hedges);
+  const price = computePriceStatus(c, fixations);
+  if (!flat.directionOk) return 'ROJO';
+  const dims = [flat.coveragePct, fx.coveragePct];
+  if (c.tipoPrecio === 'PTBF') dims.push(price.pricedPct);
+  if (dims.every(p => p >= COVERAGE_THRESHOLD)) return 'VERDE';
+  return dims.some(p => p > 0) ? 'AMARILLO' : 'ROJO';
+}
+function totalCostsByCurrency(costs) {
+  const acc = { COP: 0, USD: 0, EUR: 0 };
+  for (const k of costs) acc[k.moneda] += k.monto;
+  return acc;
+}
+
+/* ============ STORE (localStorage) ============ */
+const KEY = 'eq_db_v1';
+const EMPTY = { counterparties: [], contracts: [], fixations: [], hedges: [], costs: [] };
+const SEED = {
+  counterparties: [
+    { id: 'cp-1', nombre: 'Cooperativa Huila', tipo: 'PROVEEDOR', pais: 'Colombia', monedaDefault: 'COP', notas: null },
+    { id: 'cp-2', nombre: 'Sucafina USA', tipo: 'CLIENTE', pais: 'USA', monedaDefault: 'USD', notas: null },
+  ],
+  contracts: [
+    { id: 'ct-1', ref: 'EQ-2026-001', lado: 'VENTA', counterpartyId: 'cp-2', cantidadLb: 37500, tamanoSacoKg: 70, calidadOrigen: 'Huila EP', moneda: 'USD', tipoPrecio: 'FIJO', mesFuturo: null, diferencialUsdLb: null, precioFijoUsdLb: 2.0, fechaTrade: '2026-07-01', fechaEntrega: '2026-09-15', estado: 'ABIERTO', notas: null },
+    { id: 'ct-2', ref: 'EQ-2026-002', lado: 'COMPRA', counterpartyId: 'cp-1', cantidadLb: 42000, tamanoSacoKg: 70, calidadOrigen: 'Contenedor 40ft', moneda: 'USD', tipoPrecio: 'PTBF', mesFuturo: 'KCU6', diferencialUsdLb: 0.15, precioFijoUsdLb: null, fechaTrade: '2026-07-10', fechaEntrega: '2026-10-01', estado: 'ABIERTO', notas: 'Diferencial sobre C, por fijar' },
+  ],
+  fixations: [ { id: 'fx-1', contractId: 'ct-2', fecha: '2026-07-12', cantidadLbFijada: 20000, precioFuturoFijadoUsdLb: 1.85 } ],
+  hedges: [
+    { id: 'hg-1', contractId: 'ct-1', riesgoCubierto: 'PRECIO', tipo: 'KC_FUTURO', direccion: 'LONG', cantidadLb: 37500, mesVencimiento: 'KCU6', strike: null, callPut: null, precioOTasaEjecucion: 1.95, broker: 'StoneX', fechaTrade: '2026-07-01', estado: 'ABIERTA' },
+    { id: 'hg-2', contractId: 'ct-1', riesgoCubierto: 'FX', tipo: 'FX_FORWARD', direccion: 'SHORT', cantidadLb: 75000, mesVencimiento: null, strike: null, callPut: null, precioOTasaEjecucion: 4050, broker: 'Bancolombia', fechaTrade: '2026-07-02', estado: 'ABIERTA' },
+  ],
+  costs: [
+    { id: 'co-1', contractId: 'ct-1', tipo: 'LOGISTICA', monto: 1200, moneda: 'USD', fecha: '2026-07-05', descripcion: 'Flete a puerto', facturaRef: 'F-8891' },
+    { id: 'co-2', contractId: 'ct-2', tipo: 'FINANCIACION', monto: 3500000, moneda: 'COP', fecha: '2026-07-11', descripcion: 'Interés compra', facturaRef: null },
+  ],
+};
+function loadDb() {
+  const raw = localStorage.getItem(KEY);
+  if (!raw) { localStorage.setItem(KEY, JSON.stringify(SEED)); return structuredClone(SEED); }
+  try { return { ...structuredClone(EMPTY), ...JSON.parse(raw) }; } catch { return structuredClone(EMPTY); }
+}
+function saveDb(db) { localStorage.setItem(KEY, JSON.stringify(db)); }
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
+
+/* ============ HELPERS ============ */
+const pct = (n) => `${(n * 100).toFixed(0)}%`;
+const fmt = (n) => Number(n).toLocaleString('es-CO', { maximumFractionDigits: 0 });
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
+function pctClass(n) { return n >= 0.95 ? '#15803d' : (n > 0 ? '#a16207' : '#b91c1c'); }
+function go(path){ location.hash = '#' + path; }
+function val(form, name){ const el = form.elements[name]; return el ? el.value : ''; }
+function optn(v){ return v === '' || v == null ? null : v; }
+
+/* ============ VISTAS ============ */
+function render() {
+  const app = document.getElementById('app');
+  const hash = location.hash.replace(/^#/, '') || '/libro';
+  const [_, view, id] = hash.split('/'); // '', view, id
+  if (view === 'nuevo') return renderNuevo(app);
+  if (view === 'counterparties') return renderCounterparties(app);
+  if (view === 'contrato' && id) return renderDetalle(app, id);
+  return renderLibro(app);
+}
+
+function libroRows() {
+  const db = loadDb();
+  const cpName = Object.fromEntries(db.counterparties.map(c => [c.id, c.nombre]));
+  return db.contracts.slice().sort((a,b)=>b.fechaTrade.localeCompare(a.fechaTrade)).map(c => {
+    const fixations = db.fixations.filter(f => f.contractId === c.id);
+    const hedges = db.hedges.filter(h => h.contractId === c.id);
+    const flat = computeFlatCoverage(c, hedges);
+    const fx = computeFxCoverage(c, fixations, hedges);
+    return {
+      id: c.id, ref: c.ref, lado: c.lado, counterparty: cpName[c.counterpartyId] || '—',
+      estado: c.estado, moneda: c.moneda, lb: c.cantidadLb, tamanoSacoKg: c.tamanoSacoKg,
+      sacos: lbToSacos(c.cantidadLb, c.tamanoSacoKg), tipoPrecio: c.tipoPrecio,
+      pricedPct: computePriceStatus(c, fixations).pricedPct, flatPct: flat.coveragePct,
+      fxPct: fx.coveragePct, exposureNotional: fx.exposureNotional,
+      status: consolidatedStatus(c, fixations, hedges),
+    };
+  });
+}
+
+function renderLibro(app) {
+  const rows = libroRows();
+  const filterColor = window.__fc || 'TODOS';
+  const filterLado = window.__fl || 'TODOS';
+  const filtered = rows.filter(r => (filterColor==='TODOS'||r.status===filterColor) && (filterLado==='TODOS'||r.lado===filterLado));
+
+  const body = rows.length === 0
+    ? `<div class="empty">No hay contratos todavía. <span class="link" onclick="go('/nuevo')">Crear el primero</span>.</div>`
+    : `<div class="row" style="margin-bottom:10px">
+        <select onchange="window.__fc=this.value;render()">
+          ${['TODOS','VERDE','AMARILLO','ROJO'].map(o=>`<option value="${o}" ${o===filterColor?'selected':''}>${o==='TODOS'?'Todos los colores':o}</option>`).join('')}
+        </select>
+        <select onchange="window.__fl=this.value;render()">
+          ${[['TODOS','Compra y venta'],['COMPRA','Compra'],['VENTA','Venta']].map(([v,l])=>`<option value="${v}" ${v===filterLado?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <span class="muted">${filtered.length} de ${rows.length} contratos</span>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Estado</th><th>Ref</th><th>Lado</th><th>Counterparty</th><th style="text-align:right">Sacos</th><th style="text-align:right">Libras</th><th>Precio</th><th style="text-align:right">% fijado</th><th style="text-align:right">% café</th><th style="text-align:right">% FX</th></tr></thead>
+        <tbody>${filtered.map(r=>`
+          <tr>
+            <td><span class="dot ${r.status}"></span> <span class="muted">${r.status}</span></td>
+            <td><span class="link" onclick="go('/contrato/${r.id}')"><b>${esc(r.ref)}</b></span></td>
+            <td>${r.lado}</td><td>${esc(r.counterparty)}</td>
+            <td style="text-align:right">${fmt(r.sacos)}×${r.tamanoSacoKg}</td>
+            <td style="text-align:right">${fmt(r.lb)}</td>
+            <td>${r.tipoPrecio}</td>
+            <td style="text-align:right;color:${pctClass(r.pricedPct)}">${pct(r.pricedPct)}</td>
+            <td style="text-align:right;color:${pctClass(r.flatPct)}">${pct(r.flatPct)}</td>
+            <td style="text-align:right;color:${pctClass(r.fxPct)}">${pct(r.fxPct)}</td>
+          </tr>`).join('')}</tbody>
+      </table></div>`;
+
+  app.innerHTML = `
+    <div class="row">
+      <h1>Libro de contratos</h1>
+      <div class="spacer"></div>
+      <button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button>
+      <button class="btn-primary" onclick="go('/nuevo')">+ Nuevo contrato</button>
+    </div>
+    <div style="margin-top:12px">${body}</div>`;
+}
+
+function renderCounterparties(app) {
+  const db = loadDb();
+  const items = db.counterparties.slice().sort((a,b)=>a.nombre.localeCompare(b.nombre));
+  app.innerHTML = `
+    <h1>Counterparties</h1>
+    <form id="cpf" class="row" style="margin:14px 0" onsubmit="return submitCp(event)">
+      <input name="nombre" required placeholder="Nombre" />
+      <select name="tipo"><option value="PROVEEDOR">Proveedor</option><option value="CLIENTE">Cliente</option></select>
+      <input name="pais" placeholder="País" />
+      <select name="monedaDefault"><option>USD</option><option>COP</option><option>EUR</option></select>
+      <button class="btn-primary">Agregar</button>
+    </form>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Nombre</th><th>Tipo</th><th>País</th><th>Moneda</th></tr></thead>
+      <tbody>${items.length===0?`<tr><td colspan="4" class="muted" style="text-align:center;padding:16px">Sin counterparties todavía.</td></tr>`:
+        items.map(c=>`<tr><td><b>${esc(c.nombre)}</b></td><td>${c.tipo}</td><td>${esc(c.pais||'—')}</td><td>${c.monedaDefault}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+}
+
+function renderNuevo(app) {
+  const db = loadDb();
+  if (db.counterparties.length === 0) {
+    app.innerHTML = `<div class="empty">Primero crea al menos un <span class="link" onclick="go('/counterparties')">counterparty</span> para asociar el contrato.</div>`;
+    return;
+  }
+  const opts = db.counterparties.map(c=>`<option value="${c.id}">${esc(c.nombre)} (${c.tipo})</option>`).join('');
+  app.innerHTML = `
+    <h1>Nuevo contrato</h1>
+    <form id="ctf" class="grid2" style="margin-top:14px" onsubmit="return submitContract(event)">
+      <input name="ref" required placeholder="Ref (EQ-2026-001)" />
+      <select name="lado"><option value="COMPRA">Compra</option><option value="VENTA">Venta</option></select>
+      <select name="counterpartyId" required class="col2"><option value="" disabled selected>— Counterparty —</option>${opts}</select>
+      <input name="sacos" type="number" step="any" required placeholder="Cantidad (sacos)" />
+      <select name="tamanoSacoKg"><option value="70">70 kg / saco</option><option value="35">35 kg / saco</option></select>
+      <input name="calidadOrigen" placeholder="Calidad / origen" class="col2" />
+      <select name="moneda"><option>USD</option><option>COP</option><option>EUR</option></select>
+      <select name="tipoPrecio" onchange="togglePrecio(this.value)"><option value="FIJO">Precio fijo</option><option value="PTBF">Diferencial (PTBF)</option></select>
+      <div id="precioFields" class="col2"></div>
+      <label class="field">Fecha trade<input name="fechaTrade" type="date" required /></label>
+      <label class="field">Fecha entrega<input name="fechaEntrega" type="date" /></label>
+      <textarea name="notas" placeholder="Notas" rows="2" class="col2"></textarea>
+      <button class="btn-primary col2">Crear contrato</button>
+    </form>`;
+  togglePrecio('FIJO');
+}
+function togglePrecio(v) {
+  const el = document.getElementById('precioFields');
+  if (!el) return;
+  el.innerHTML = v === 'FIJO'
+    ? `<input name="precioFijoUsdLb" type="number" step="any" placeholder="Precio fijo USD/lb" style="width:100%" />`
+    : `<div class="row"><input name="mesFuturo" placeholder="Mes futuro (KCU6)" /><input name="diferencialUsdLb" type="number" step="any" placeholder="Diferencial USD/lb" /></div>`;
+}
+
+function renderDetalle(app, id) {
+  const db = loadDb();
+  const c = db.contracts.find(x => x.id === id);
+  if (!c) { app.innerHTML = `<div class="empty">Contrato no encontrado. <span class="link" onclick="go('/libro')">Volver al libro</span></div>`; return; }
+  const cp = db.counterparties.find(x => x.id === c.counterpartyId) || null;
+  const fixations = db.fixations.filter(f => f.contractId === id).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const hedges = db.hedges.filter(h => h.contractId === id).sort((a,b)=>a.fechaTrade.localeCompare(b.fechaTrade));
+  const costs = db.costs.filter(k => k.contractId === id).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const price = computePriceStatus(c, fixations);
+  const flat = computeFlatCoverage(c, hedges);
+  const fx = computeFxCoverage(c, fixations, hedges);
+  const status = consolidatedStatus(c, fixations, hedges);
+  const totals = totalCostsByCurrency(costs);
+  const priced = pricedUsdValue(c, fixations);
+
+  app.innerHTML = `
+    <div class="row"><span class="link" onclick="go('/libro')">← Libro</span>
+      <h1>${esc(c.ref)} — ${c.lado}</h1><span class="dot ${status}"></span> <span class="muted">${status}</span></div>
+    <div class="muted" style="margin:6px 0 16px">
+      ${esc(cp?cp.nombre:'—')} · ${fmt(lbToSacos(c.cantidadLb,c.tamanoSacoKg))} sacos ×${c.tamanoSacoKg}kg = ${fmt(c.cantidadLb)} lb ·
+      ${c.tipoPrecio==='FIJO'?`precio fijo ${c.precioFijoUsdLb} USD/lb`:`${esc(c.mesFuturo)} + dif ${c.diferencialUsdLb} USD/lb`}
+    </div>
+    <div class="grid3">
+      <div class="card ${price.pricedPct>=.95?'ok':''}">
+        <div class="muted">PRECIO (FIJACIÓN)</div><div class="big">${pct(price.pricedPct)}</div>
+        <div class="muted">${c.tipoPrecio==='PTBF'?`Por fijar: ${fmt(price.unfixedLb)} lb`:'Precio fijo (nada por fijar)'}</div>
+      </div>
+      <div class="card ${flat.coveragePct>=.95&&flat.directionOk?'ok':''}">
+        <div class="muted">COBERTURA CAFÉ</div><div class="big">${pct(flat.coveragePct)}</div>
+        <div class="muted">${flat.kcContracts} contratos KC · residual ${fmt(flat.residualLb)} lb</div>
+        ${flat.directionOk?'':'<div class="warn">⚠ dirección de hedge equivocada</div>'}
+      </div>
+      <div class="card ${fx.coveragePct>=.95?'ok':''}">
+        <div class="muted">COBERTURA FX</div><div class="big">${pct(fx.coveragePct)}</div>
+        <div class="muted">Exposición ${fmt(fx.exposureNotional)} ${c.moneda}</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <b>Economía (Fase 1)</b>
+      <div class="muted" style="margin-top:4px">Valor priced: ${fmt(priced)} USD · Costos: USD ${fmt(totals.USD)} / COP ${fmt(totals.COP)} / EUR ${fmt(totals.EUR)}</div>
+      <div class="muted" style="margin-top:2px">Mark-to-market real llega en Fase 2 (feed de mercado).</div>
+    </div>
+
+    <section>
+      <h2>Fijaciones de precio</h2>
+      ${fixations.length===0?'<div class="muted">Sin fijaciones.</div>':fixations.map(f=>`<div class="item">${f.fecha} · ${fmt(f.cantidadLbFijada)} lb @ ${f.precioFuturoFijadoUsdLb} USD/lb</div>`).join('')}
+      ${c.tipoPrecio==='PTBF'?`
+      <form class="row" style="margin-top:8px" onsubmit="return submitFixation(event,'${id}')">
+        <input name="fecha" type="date" required />
+        <input name="cantidadLbFijada" type="number" step="any" required placeholder="lb fijadas" />
+        <input name="precioFuturoFijadoUsdLb" type="number" step="any" required placeholder="precio futuro USD/lb" />
+        <button class="btn-dark">+ Fijación</button>
+      </form>`:''}
+    </section>
+
+    <section>
+      <h2>Hedges</h2>
+      ${hedges.length===0?'<div class="muted">Sin hedges.</div>':hedges.map(h=>`<div class="item">${h.riesgoCubierto} · ${h.tipo} · ${h.direccion} · ${fmt(h.cantidadLb)} @ ${h.precioOTasaEjecucion}${h.mesVencimiento?' · '+esc(h.mesVencimiento):''} (${h.estado})</div>`).join('')}
+      <form class="row" style="margin-top:8px" onsubmit="return submitHedge(event,'${id}')">
+        <select name="riesgoCubierto"><option value="PRECIO">Precio (café)</option><option value="FX">FX (divisa)</option></select>
+        <select name="tipo"><option value="KC_FUTURO">KC Futuro</option><option value="KC_OPCION">KC Opción</option><option value="FX_FORWARD">FX Forward</option><option value="FX_OPCION">FX Opción</option></select>
+        <select name="direccion"><option value="LONG">Long</option><option value="SHORT">Short</option></select>
+        <input name="cantidadLb" type="number" step="any" required placeholder="lb / nocional" style="width:120px" />
+        <input name="mesVencimiento" placeholder="Vto (KCU6)" style="width:90px" />
+        <input name="precioOTasaEjecucion" type="number" step="any" required placeholder="precio/tasa" style="width:100px" />
+        <input name="broker" placeholder="broker" style="width:100px" />
+        <input name="fechaTrade" type="date" required />
+        <button class="btn-dark">+ Hedge</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Costos</h2>
+      ${costs.length===0?'<div class="muted">Sin costos.</div>':costs.map(k=>`<div class="item">${k.fecha} · ${k.tipo} · ${fmt(k.monto)} ${k.moneda}${k.facturaRef?' · '+esc(k.facturaRef):''}${k.descripcion?' · '+esc(k.descripcion):''}</div>`).join('')}
+      <form class="row" style="margin-top:8px" onsubmit="return submitCost(event,'${id}')">
+        <select name="tipo"><option>FINANCIACION</option><option>LOGISTICA</option><option>COMISION_BROKER</option><option>ALMACENAJE</option><option>CERTIFICACION</option><option>OTRO</option></select>
+        <input name="monto" type="number" step="any" required placeholder="monto" style="width:110px" />
+        <select name="moneda"><option>USD</option><option>COP</option><option>EUR</option></select>
+        <input name="fecha" type="date" required />
+        <input name="facturaRef" placeholder="factura ref" style="width:110px" />
+        <input name="descripcion" placeholder="descripción" style="width:150px" />
+        <button class="btn-dark">+ Costo</button>
+      </form>
+    </section>`;
+}
+
+/* ============ ACCIONES (escriben al store) ============ */
+function submitCp(e){ e.preventDefault(); const f=e.target; const db=loadDb();
+  db.counterparties.push({ id:uid(), nombre:val(f,'nombre'), tipo:val(f,'tipo'), pais:optn(val(f,'pais')), monedaDefault:val(f,'monedaDefault'), notas:null });
+  saveDb(db); render(); return false; }
+
+function submitContract(e){ e.preventDefault(); const f=e.target; const db=loadDb();
+  const tamano=Number(val(f,'tamanoSacoKg')); const tipoPrecio=val(f,'tipoPrecio');
+  db.contracts.push({ id:uid(), ref:val(f,'ref'), lado:val(f,'lado'), counterpartyId:val(f,'counterpartyId'),
+    cantidadLb:sacosToLb(Number(val(f,'sacos')),tamano), tamanoSacoKg:tamano, calidadOrigen:optn(val(f,'calidadOrigen')),
+    moneda:val(f,'moneda'), tipoPrecio,
+    mesFuturo:tipoPrecio==='PTBF'?optn(val(f,'mesFuturo')):null,
+    diferencialUsdLb:tipoPrecio==='PTBF'?Number(val(f,'diferencialUsdLb')):null,
+    precioFijoUsdLb:tipoPrecio==='FIJO'?Number(val(f,'precioFijoUsdLb')):null,
+    fechaTrade:val(f,'fechaTrade'), fechaEntrega:optn(val(f,'fechaEntrega')), estado:'ABIERTO', notas:optn(val(f,'notas')) });
+  saveDb(db); go('/libro'); return false; }
+
+function submitFixation(e,id){ e.preventDefault(); const f=e.target; const db=loadDb();
+  db.fixations.push({ id:uid(), contractId:id, fecha:val(f,'fecha'), cantidadLbFijada:Number(val(f,'cantidadLbFijada')), precioFuturoFijadoUsdLb:Number(val(f,'precioFuturoFijadoUsdLb')) });
+  saveDb(db); render(); return false; }
+
+function submitHedge(e,id){ e.preventDefault(); const f=e.target; const db=loadDb();
+  db.hedges.push({ id:uid(), contractId:id, riesgoCubierto:val(f,'riesgoCubierto'), tipo:val(f,'tipo'), direccion:val(f,'direccion'),
+    cantidadLb:Number(val(f,'cantidadLb')), mesVencimiento:optn(val(f,'mesVencimiento')), strike:null, callPut:null,
+    precioOTasaEjecucion:Number(val(f,'precioOTasaEjecucion')), broker:optn(val(f,'broker')), fechaTrade:val(f,'fechaTrade'), estado:'ABIERTA' });
+  saveDb(db); render(); return false; }
+
+function submitCost(e,id){ e.preventDefault(); const f=e.target; const db=loadDb();
+  db.costs.push({ id:uid(), contractId:id, tipo:val(f,'tipo'), monto:Number(val(f,'monto')), moneda:val(f,'moneda'), fecha:val(f,'fecha'), facturaRef:optn(val(f,'facturaRef')), descripcion:optn(val(f,'descripcion')) });
+  saveDb(db); render(); return false; }
+
+/* ============ EXPORT CSV (abre en Excel) ============ */
+function exportCsv(){
+  const rows = libroRows();
+  const headers = ['Ref','Lado','Counterparty','Estado','Sacos','Tamano_saco_kg','Libras','Moneda','Tipo_precio','Exposicion_FX','Pct_fijado','Pct_cafe','Pct_FX','Semaforo'];
+  const esc = (v)=>{ const s=String(v); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; };
+  const lines = [headers.join(',')];
+  for (const r of rows) lines.push([r.ref,r.lado,r.counterparty,r.estado,Math.round(r.sacos),r.tamanoSacoKg,Math.round(r.lb),r.moneda,r.tipoPrecio,Math.round(r.exposureNotional),(r.pricedPct*100).toFixed(0)+'%',(r.flatPct*100).toFixed(0)+'%',(r.fxPct*100).toFixed(0)+'%',r.status].map(esc).join(','));
+  const blob = new Blob(['﻿'+lines.join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'libro_equation_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
