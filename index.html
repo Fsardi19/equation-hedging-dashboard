@@ -3,348 +3,436 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Equation Coffee — Libro de Coberturas (MVP v2)</title>
+<title>Equation Coffee — Coberturas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root { --amber:#b45309; --amber-d:#92400e; --bg:#f9fafb; --line:#e5e7eb; --muted:#6b7280; --open:#fed7aa; --open-b:#fb923c; }
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:#111827; }
-  nav { display:flex; align-items:center; gap:16px; background:#fff; border-bottom:1px solid var(--line); padding:12px 16px; box-shadow:0 1px 2px rgba(0,0,0,.04); flex-wrap:wrap; }
-  nav a { color:var(--muted); text-decoration:none; font-size:14px; cursor:pointer; }
-  nav a:hover { color:#000; } nav a.active { color:var(--amber-d); font-weight:600; }
-  nav .brand { font-weight:600; color:var(--amber-d); }
-  nav .tag { margin-left:auto; background:#fef3c7; color:var(--amber-d); font-size:12px; padding:2px 8px; border-radius:6px; }
-  main { max-width:1180px; margin:0 auto; padding:16px; }
-  h1 { font-size:18px; font-weight:600; } h2 { font-size:15px; font-weight:600; margin:0 0 8px; }
-  .row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .spacer { margin-left:auto; }
-  button, .btn { cursor:pointer; border:none; border-radius:6px; padding:8px 14px; font-size:14px; }
-  .btn-primary { background:var(--amber); color:#fff; } .btn-primary:hover { background:var(--amber-d); }
-  .btn-dark { background:#1f2937; color:#fff; padding:6px 12px; } .btn-dark:hover { background:#000; }
-  .btn-ghost { background:#fff; border:1px solid var(--line); color:#111827; } .btn-ghost:hover { background:#f3f4f6; }
-  .btn-danger { background:#fff; border:1px solid #fecaca; color:#dc2626; } .btn-danger:hover { background:#fef2f2; }
-  input, select, textarea { border:1px solid var(--line); border-radius:6px; padding:8px; font-size:14px; font-family:inherit; }
-  table { width:100%; border-collapse:collapse; font-size:13px; background:#fff; }
-  thead tr.grp th { background:#f3f4f6; text-align:center; font-size:11px; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--line); }
-  thead tr.col th { background:#f9fafb; text-align:left; font-size:11px; text-transform:uppercase; color:var(--muted); }
-  th, td { padding:7px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
-  .num { text-align:right; }
-  .open { background:var(--open); }
-  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .legboxes { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .muted { color:var(--muted); font-size:12px; }
-  .big { font-size:22px; font-weight:700; }
-  .pos { font-size:20px; font-weight:700; }
-  .pill { font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600; }
-  .pill.cerrada { background:#dcfce7; color:#15803d; } .pill.abierta { background:var(--open); color:#9a3412; }
-  .link { color:#2563eb; text-decoration:underline; cursor:pointer; }
-  .empty { border:1px dashed var(--line); border-radius:8px; padding:32px; text-align:center; color:var(--muted); font-size:14px; }
-  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; }
-  label.field { display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--muted); }
-  section { margin-top:22px; }
-  .legend { display:flex; gap:16px; font-size:12px; color:var(--muted); align-items:center; flex-wrap:wrap; }
-  .sw { display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:middle; margin-right:4px; }
-  .pos-usd { color:#15803d; font-weight:600; } .neg-usd { color:#b91c1c; font-weight:600; }
-  fieldset { border:1px solid var(--line); border-radius:8px; padding:12px; }
-  legend { font-size:12px; font-weight:600; color:#374151; padding:0 6px; }
-  @media (max-width:720px){ .grid2,.legboxes{grid-template-columns:1fr;} }
+  :root{
+    --cream:#f7f7f1; --paper:#fffffe; --ink:#1c1b1b; --ink-2:#252524;
+    --teal:#1a383f; --teal-2:#24505a; --teal-3:#0f272c;
+    --tan:#cec1ad; --tan-2:#c9b9a1; --sand:#e9e3d6;
+    --gray:#6a6a6a; --line:#e4ded1; --line-2:#d8cfbc;
+    --green:#2f6b4f; --brick:#b4522e; --amber:#c98a2e;
+    --serif:'Libre Baskerville','Baskerville','Palatino',Georgia,serif;
+    --sans:'Lato',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --shadow:0 1px 2px rgba(28,27,27,.05),0 8px 24px -12px rgba(26,56,63,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{font-family:var(--sans);background:var(--cream);color:var(--ink);font-weight:400;-webkit-font-smoothing:antialiased;}
+  .num,.tnum{font-variant-numeric:tabular-nums;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- SHELL ---------- */
+  .shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh;}
+  .sidebar{background:var(--teal);color:#e8ede9;display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;}
+  .brand{display:flex;flex-direction:column;gap:2px;padding:6px 8px 20px;border-bottom:1px solid rgba(255,255,255,.12);}
+  .brand .mark{font-family:var(--serif);font-size:22px;letter-spacing:.14em;font-weight:700;color:#fff;}
+  .brand .sub{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--tan);}
+  .brand .tagline{font-family:var(--serif);font-style:italic;font-size:12px;color:#bcccc9;margin-top:8px;}
+  nav.side{display:flex;flex-direction:column;gap:2px;margin-top:18px;}
+  nav.side a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:14px;color:#c7d3d0;transition:.15s;cursor:pointer;}
+  nav.side a svg{width:17px;height:17px;opacity:.8;flex:none;}
+  nav.side a:hover{background:rgba(255,255,255,.07);color:#fff;}
+  nav.side a.active{background:var(--tan);color:var(--teal-3);font-weight:700;}
+  nav.side a.active svg{opacity:1;}
+  .side-foot{margin-top:auto;font-size:11px;color:#8fa4a1;line-height:1.5;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.1);}
+  .side-foot b{color:var(--tan);}
+
+  .content{min-width:0;}
+  main{padding:26px 32px 60px;max-width:1240px;}
+
+  /* ---------- HEADER ---------- */
+  .phead{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
+  .phead h1{font-family:var(--serif);font-weight:700;font-size:28px;line-height:1.1;margin:0;color:var(--ink-2);}
+  .phead .kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--tan-2);margin-bottom:5px;}
+  .phead .desc{font-family:var(--serif);font-style:italic;color:var(--gray);font-size:14px;margin-top:3px;}
+  .phead .actions{margin-left:auto;display:flex;gap:9px;}
+
+  /* ---------- BUTTONS ---------- */
+  button,.btn{font-family:var(--sans);cursor:pointer;border:none;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:700;letter-spacing:.01em;transition:.15s;display:inline-flex;align-items:center;gap:7px;}
+  .btn-primary{background:var(--teal);color:#fff;box-shadow:0 6px 16px -8px rgba(26,56,63,.7);}
+  .btn-primary:hover{background:var(--teal-2);transform:translateY(-1px);}
+  .btn-ghost{background:var(--paper);color:var(--teal);border:1px solid var(--line-2);}
+  .btn-ghost:hover{border-color:var(--teal-2);background:#fbfaf6;}
+  .btn-dark{background:var(--ink-2);color:#fff;} .btn-dark:hover{background:#000;}
+  .btn-danger{background:#fff;color:var(--brick);border:1px solid #e7c3b4;} .btn-danger:hover{background:#fdf3ef;}
+  .btn-sm{padding:7px 12px;font-size:12.5px;}
+
+  /* ---------- INPUTS ---------- */
+  input,select,textarea{font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:9px;padding:9px 11px;transition:.15s;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal-2);box-shadow:0 0 0 3px rgba(26,56,63,.1);}
+  label.field{display:flex;flex-direction:column;gap:5px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--gray);font-weight:700;}
+
+  /* ---------- CARDS ---------- */
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);}
+  .card.pad{padding:18px 20px;}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+  .kpi{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;animation:rise .5s both;}
+  .kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tan);}
+  .kpi.accent:before{background:var(--teal);}
+  .kpi.warn:before{background:var(--amber);}
+  .kpi .lbl{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700;}
+  .kpi .big{font-family:var(--serif);font-size:29px;font-weight:700;margin-top:8px;line-height:1;color:var(--ink-2);}
+  .kpi .foot{font-size:12px;color:var(--gray);margin-top:7px;}
+  .pos-usd{color:var(--green);} .neg-usd{color:var(--brick);}
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .kpi:nth-child(2){animation-delay:.05s;}.kpi:nth-child(3){animation-delay:.1s;}.kpi:nth-child(4){animation-delay:.15s;}
+
+  .charts{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:18px;}
+  .card-h{display:flex;align-items:center;gap:8px;padding:15px 20px 0;}
+  .card-h h3{font-family:var(--serif);font-size:16px;font-weight:700;margin:0;color:var(--ink-2);}
+  .card-h .hint{font-size:11px;color:var(--gray);margin-left:auto;}
+  .chart-body{padding:12px 18px 18px;}
+
+  /* ---------- TABLE ---------- */
+  .tablewrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--paper);}
+  .tscroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead tr.grp th{background:var(--sand);color:var(--teal);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:9px 10px;text-align:center;}
+  thead tr.col th{background:#faf8f3;color:var(--gray);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:10px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap;}
+  tbody td{padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink-2);}
+  tbody tr{transition:.12s;cursor:pointer;}
+  tbody tr:hover{background:#faf8f2;}
+  tbody tr:last-child td{border-bottom:none;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;}
+  .sep{border-left:2px solid var(--line-2);}
+  td.open,th.open{background:rgba(201,138,46,.12);}
+  tfoot td{padding:12px 10px;background:#faf8f3;font-weight:700;color:var(--ink-2);border-top:1px solid var(--line-2);}
+  .cli{font-weight:700;color:var(--ink-2);}
+  .ped{color:var(--gray);font-size:12px;}
+
+  .pill{font-size:10.5px;padding:3px 9px;border-radius:999px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;display:inline-block;}
+  .pill.cerrada{background:rgba(47,107,79,.12);color:var(--green);}
+  .pill.abierta{background:rgba(201,138,46,.16);color:#9a6a16;}
+  .posbadge{font-family:var(--serif);font-weight:700;}
+  .nemo{color:var(--tan-2);font-size:11px;font-weight:700;letter-spacing:.05em;}
+
+  .legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--gray);margin-top:14px;align-items:center;}
+  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:6px;}
+  .link{color:var(--teal-2);border-bottom:1px solid var(--tan-2);cursor:pointer;font-weight:700;}
+  .empty{border:1.5px dashed var(--line-2);border-radius:14px;padding:44px;text-align:center;color:var(--gray);background:var(--paper);}
+  .filters{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  .filters .count{font-size:12px;color:var(--gray);}
+
+  fieldset{border:1px solid var(--line-2);border-radius:12px;padding:16px;background:var(--paper);}
+  fieldset legend{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--teal);padding:0 8px;}
+  fieldset.open-leg{background:rgba(201,138,46,.07);border-color:#e6cfa2;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+  .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .bignum{font-family:var(--serif);font-size:38px;font-weight:700;line-height:1;}
+  .kv{font-size:13.5px;color:var(--ink-2);margin-top:5px;} .kv b{font-weight:700;}
+  .backlink{color:var(--teal-2);font-weight:700;cursor:pointer;font-size:13px;}
+
+  /* chart text */
+  .cl-lbl{font:600 11px var(--sans);fill:var(--ink-2);}
+  .cl-val{font:700 11px var(--sans);fill:var(--gray);}
+  .ax{stroke:var(--line-2);stroke-width:1;}
+  .donut-c{font-family:var(--serif);}
+
+  @media (max-width:1000px){ .charts{grid-template-columns:1fr;} .kpis{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:760px){
+    .shell{grid-template-columns:1fr;}
+    .sidebar{position:static;height:auto;flex-direction:row;align-items:center;gap:14px;padding:12px 16px;overflow-x:auto;}
+    .brand{border:none;padding:0;flex:none;} .brand .tagline,.side-foot{display:none;}
+    nav.side{flex-direction:row;margin:0;}
+    main{padding:18px;}
+    .grid2,.grid3,.detail-grid{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
-<nav>
-  <span class="brand">☕ Equation — Coberturas</span>
-  <a data-v="libro" onclick="go('/libro')">Libro de coberturas</a>
-  <a data-v="nueva" onclick="go('/nueva')">Nueva cobertura</a>
-  <a data-v="fx" onclick="go('/fx')">Coberturas FX</a>
-  <span class="tag">MVP v2 — datos en tu navegador</span>
-</nav>
-<main id="app"></main>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="mark">EQUATION</span>
+      <span class="sub">Coffee</span>
+      <span class="tagline">Cobertura con transparencia.</span>
+    </div>
+    <nav class="side">
+      <a data-v="libro" onclick="go('/libro')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg>
+        Dashboard</a>
+      <a data-v="nueva" onclick="go('/nueva')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva cobertura</a>
+      <a data-v="fx" onclick="go('/fx')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>
+        Coberturas FX</a>
+    </nav>
+    <div class="side-foot">
+      <b>MVP · v2</b><br>Datos guardados en tu navegador.<br>Prototipo para pruebas.
+    </div>
+  </aside>
+
+  <div class="content"><main id="app"></main></div>
+</div>
 
 <script>
 /* ============ CONSTANTES / DOMINIO ============ */
-const LB_PER_KG = 2.2046226218;
-const KC_CONTRACT_LB = 37500;   // 1 lote KC
-const KG_SACO_COB = 60;         // sacos de coberturas
-const MESES = ['Marzo','Mayo','Julio','Septiembre','Diciembre'];
-const NEMO = { Marzo:'H', Mayo:'K', Julio:'N', Septiembre:'U', Diciembre:'Z' };
+const LB_PER_KG=2.2046226218, KC_CONTRACT_LB=37500, KG_SACO_COB=60;
+const MESES=['Marzo','Mayo','Julio','Septiembre','Diciembre'];
+const NEMO={Marzo:'H',Mayo:'K',Julio:'N',Septiembre:'U',Diciembre:'Z'};
+const PALETTE=['#1a383f','#c9b9a1','#6a6a6a','#2f6b4f','#24505a','#b4522e','#cec1ad','#0f272c'];
 
-const sacos60ToLb = (s) => s * KG_SACO_COB * LB_PER_KG;
-const lbToLotes = (lb) => lb / KC_CONTRACT_LB;
-const sacos60ToLotes = (s) => lbToLotes(sacos60ToLb(s));
+const sacos60ToLb=s=>s*KG_SACO_COB*LB_PER_KG;
+const lbToLotes=lb=>lb/KC_CONTRACT_LB;
+const sacos60ToLotes=s=>lbToLotes(sacos60ToLb(s));
+const legOk=l=>l&&l.precio!==null&&l.precio!==undefined&&l.precio!=='';
+const coberturaEstado=c=>(legOk(c.compra)&&legOk(c.venta))?'CERRADA':'ABIERTA';
+function lotesDe(c){const lc=legOk(c.compra)?sacos60ToLotes(c.compra.sacos60):null;const lv=legOk(c.venta)?sacos60ToLotes(c.venta.sacos60):null;if(lc!==null&&lv!==null)return Math.min(lc,lv);return lc??lv??0;}
+function resultadoDe(c){if(coberturaEstado(c)!=='CERRADA')return null;return (c.venta.precio-c.compra.precio)*lotesDe(c)*KC_CONTRACT_LB;}
 
-// Una pata "existe" si tiene precio.
-const legOk = (leg) => leg && leg.precio !== null && leg.precio !== undefined && leg.precio !== '';
-function coberturaEstado(c) { return (legOk(c.compra) && legOk(c.venta)) ? 'CERRADA' : 'ABIERTA'; }
-function lotesDe(c) {
-  const lc = legOk(c.compra) ? sacos60ToLotes(c.compra.sacos60) : null;
-  const lv = legOk(c.venta) ? sacos60ToLotes(c.venta.sacos60) : null;
-  if (lc !== null && lv !== null) return Math.min(lc, lv);
-  return lc ?? lv ?? 0;
+/* ============ STORE ============ */
+const KEY='eq_cob_v2', EMPTY={coberturas:[],fx:[]};
+function seed(){
+  const cob=o=>Object.assign({id:uid(),incoterm:'FOB',producto:'',cliente:'',pedido:'',posicion:'Septiembre',fnd:'',compra:null,venta:null},o);
+  const leg=(codigoHP,fecha,sacos60,precio)=>({codigoHP,fecha,sacos60,precio});
+  return {coberturas:[
+    cob({cliente:'Katz (Serengueti)',pedido:'S00443',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1506855','2026-07-22',70,3.1810),venta:leg('1504300','2026-07-21',70,3.2790)}),
+    cob({cliente:'TAF',pedido:'S00329',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1519396','2026-07-29',140,3.2975),venta:leg('1516379','2026-07-28',140,3.4590)}),
+    cob({cliente:'TAF',pedido:'S00345',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1237914','2026-07-15',333,3.2835),venta:leg('1533840','2026-08-07',333,3.3500)}),
+    cob({cliente:'SPOT USA',pedido:'',posicion:'Diciembre',fnd:'2026-11-20',compra:leg('1509836','2026-07-23',70,2.9610),venta:leg('1534536','2026-08-07',70,3.1890)}),
+    cob({cliente:'Royal Coffee Inc',pedido:'S00454',posicion:'Diciembre',fnd:'2026-11-20',compra:leg('1524797','2026-08-03',175,3.1010),venta:null}),
+    cob({cliente:'Katz (Serengueti)',pedido:'S00443',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1533999','2026-08-07',283,3.3000),venta:leg('1533745','2026-08-07',283,3.3095)}),
+  ],fx:[
+    {id:uid(),par:'USDCOP',tipo:'FORWARD',lado:'VENTA',nocional:200000,tasa:4050,fecha:'2026-07-02',vencimiento:'2026-09-15',pedido:'S00443',notas:'Cobertura ingreso USD venta Katz'},
+  ]};
 }
-// Resultado (USD) = (precio venta - precio compra) * lotes * 37.500
-function resultadoDe(c) {
-  if (coberturaEstado(c) !== 'CERRADA') return null;
-  const lotes = lotesDe(c);
-  return (c.venta.precio - c.compra.precio) * lotes * KC_CONTRACT_LB;
-}
-
-/* ============ STORE (localStorage) ============ */
-const KEY = 'eq_cob_v2';
-const EMPTY = { coberturas: [], fx: [] };
-function seed() {
-  const cob = (o) => Object.assign({ id: uid(), incoterm:'FOB', producto:'', cliente:'', pedido:'', posicion:'Septiembre', fnd:'', compra:null, venta:null }, o);
-  const leg = (codigoHP, fecha, sacos60, precio) => ({ codigoHP, fecha, sacos60, precio });
-  return {
-    coberturas: [
-      cob({ cliente:'Katz (Serengueti)', pedido:'S00443', posicion:'Septiembre', fnd:'2026-08-20',
-            compra: leg('1506855','2026-07-22',70,3.1810), venta: leg('1504300','2026-07-21',70,3.2790) }),
-      cob({ cliente:'TAF', pedido:'S00329', posicion:'Septiembre', fnd:'2026-08-20',
-            compra: leg('1519396','2026-07-29',140,3.2975), venta: leg('1516379','2026-07-28',140,3.4590) }),
-      cob({ cliente:'SPOT USA', pedido:'', posicion:'Diciembre', fnd:'2026-11-20',
-            compra: leg('1509836','2026-07-23',70,2.9610), venta: leg('1534536','2026-08-07',70,3.1890) }),
-      cob({ cliente:'Royal Coffee Inc', pedido:'S00454', posicion:'Diciembre', fnd:'2026-11-20',
-            compra: leg('1524797','2026-08-03',175,3.1010), venta: null }),   // ABIERTA (falta vender el contrato)
-    ],
-    fx: [
-      { id: uid(), par:'USDCOP', tipo:'FORWARD', lado:'VENTA', nocional:200000, tasa:4050, fecha:'2026-07-02', vencimiento:'2026-09-15', pedido:'S00443', notas:'Cobertura ingreso USD venta Katz' },
-    ],
-  };
-}
-function loadDb() {
-  const raw = localStorage.getItem(KEY);
-  if (!raw) { const s = seed(); localStorage.setItem(KEY, JSON.stringify(s)); return s; }
-  try { return { ...structuredClone(EMPTY), ...JSON.parse(raw) }; } catch { return structuredClone(EMPTY); }
-}
-function saveDb(db) { localStorage.setItem(KEY, JSON.stringify(db)); }
-const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2));
+function loadDb(){const raw=localStorage.getItem(KEY);if(!raw){const s=seed();localStorage.setItem(KEY,JSON.stringify(s));return s;}try{return{...structuredClone(EMPTY),...JSON.parse(raw)};}catch{return structuredClone(EMPTY);}}
+function saveDb(db){localStorage.setItem(KEY,JSON.stringify(db));}
+const uid=()=>crypto.randomUUID?crypto.randomUUID():'id-'+Math.random().toString(36).slice(2);
 
 /* ============ HELPERS ============ */
-const money = (n) => Number(n).toLocaleString('es-CO', { minimumFractionDigits:2, maximumFractionDigits:2 });
-const fmt = (n) => Number(n).toLocaleString('es-CO', { maximumFractionDigits: 0 });
-const lot = (n) => Number(n).toLocaleString('es-CO', { minimumFractionDigits:4, maximumFractionDigits:4 });
-const px  = (n) => (n===null||n===undefined||n==='') ? '' : Number(n).toLocaleString('es-CO',{minimumFractionDigits:4,maximumFractionDigits:4});
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
-const go = (p) => { location.hash = '#' + p; };
-const val = (f,n) => { const el=f.elements[n]; return el ? el.value : ''; };
-const numOrNull = (v) => (v===''||v===null||v===undefined) ? null : Number(v);
-const strOrNull = (v) => (v===''||v===null||v===undefined) ? null : v;
-function nemo(pos){ return NEMO[pos] ? `KC${NEMO[pos]}` : ''; }
+const money=n=>Number(n).toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0=n=>Number(n).toLocaleString('es-CO',{maximumFractionDigits:0});
+const fmt=n=>Number(n).toLocaleString('es-CO',{maximumFractionDigits:0});
+const lot=n=>Number(n).toLocaleString('es-CO',{minimumFractionDigits:4,maximumFractionDigits:4});
+const px=n=>(n===null||n===undefined||n==='')?'':Number(n).toLocaleString('es-CO',{minimumFractionDigits:4,maximumFractionDigits:4});
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const trunc=(s,n)=>{s=String(s??'');return s.length>n?s.slice(0,n-1)+'…':s;};
+const go=p=>{location.hash='#'+p;};
+const val=(f,n)=>{const el=f.elements[n];return el?el.value:'';};
+const numOrNull=v=>(v===''||v===null||v===undefined)?null:Number(v);
+const strOrNull=v=>(v===''||v===null||v===undefined)?null:v;
+const nemo=pos=>NEMO[pos]?`KC${NEMO[pos]}`:'';
+
+/* ============ SVG CHARTS ============ */
+function hbars(data,{w=520,barH=24,gap=13,labelW=140}={}){
+  if(!data.length) return `<div class="empty" style="padding:24px">Sin datos para graficar.</div>`;
+  const max=Math.max(1,...data.map(d=>Math.abs(d.value)));
+  const chartW=w-labelW-70, pad=6;
+  const h=pad*2+data.length*(barH+gap)-gap;
+  let y=pad,out='';
+  for(const d of data){
+    const len=Math.max(2,Math.abs(d.value)/max*chartW);
+    const color=d.value>=0?'var(--teal)':'var(--brick)';
+    out+=`<text x="0" y="${y+barH*0.7}" class="cl-lbl">${esc(trunc(d.label,20))}</text>`;
+    out+=`<rect x="${labelW}" y="${y}" width="${len}" height="${barH}" rx="5" fill="${color}"><animate attributeName="width" from="0" to="${len}" dur="0.7s" fill="freeze"/></rect>`;
+    out+=`<text x="${labelW+len+8}" y="${y+barH*0.7}" class="cl-val">${money0(d.value)}</text>`;
+    y+=barH+gap;
+  }
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${out}</svg>`;
+}
+function donut(segments,{size=180,thick=30,centerTop='',centerBot=''}={}){
+  const total=segments.reduce((a,s)=>a+s.value,0);
+  const r=(size-thick)/2,cx=size/2,cy=size/2,C=2*Math.PI*r;
+  let off=0,arcs='';
+  if(total<=0){arcs=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line-2)" stroke-width="${thick}"/>`;}
+  else for(const s of segments){const len=(s.value/total)*C;arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${thick}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;off+=len;}
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img">${arcs}
+    <text x="${cx}" y="${cy-3}" text-anchor="middle" class="donut-c" style="font-size:26px;font-weight:700;fill:var(--ink-2)">${centerTop}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" style="font:700 10px var(--sans);fill:var(--gray);letter-spacing:.1em">${centerBot}</text></svg>`;
+}
 
 /* ============ ROUTER ============ */
-function render() {
-  const app = document.getElementById('app');
-  const hash = location.hash.replace(/^#/, '') || '/libro';
-  const [_, view, id] = hash.split('/');
-  document.querySelectorAll('nav a[data-v]').forEach(a => a.classList.toggle('active', a.dataset.v === (view||'libro')));
-  if (view === 'nueva') return renderForm(app, null);
-  if (view === 'editar' && id) return renderForm(app, id);
-  if (view === 'cobertura' && id) return renderDetalle(app, id);
-  if (view === 'fx') return renderFx(app);
+function render(){
+  const app=document.getElementById('app');
+  const hash=location.hash.replace(/^#/,'')||'/libro';
+  const [_,view,id]=hash.split('/');
+  document.querySelectorAll('nav.side a[data-v]').forEach(a=>a.classList.toggle('active',a.dataset.v===(view||'libro')));
+  window.scrollTo(0,0);
+  if(view==='nueva')return renderForm(app,null);
+  if(view==='editar'&&id)return renderForm(app,id);
+  if(view==='cobertura'&&id)return renderDetalle(app,id);
+  if(view==='fx')return renderFx(app);
   return renderLibro(app);
 }
 
-/* ============ LIBRO DE COBERTURAS ============ */
-function renderLibro(app) {
-  const db = loadDb();
-  const fCli = window.__fCli || 'TODOS';
-  const fPos = window.__fPos || 'TODOS';
-  const fEst = window.__fEst || 'TODOS';
-  const clientes = [...new Set(db.coberturas.map(c => c.cliente).filter(Boolean))].sort();
+/* ============ DASHBOARD / LIBRO ============ */
+function renderLibro(app){
+  const db=loadDb();
+  const fCli=window.__fCli||'TODOS',fPos=window.__fPos||'TODOS',fEst=window.__fEst||'TODOS';
+  const clientes=[...new Set(db.coberturas.map(c=>c.cliente).filter(Boolean))].sort();
+  const filtered=db.coberturas.filter(c=>(fCli==='TODOS'||c.cliente===fCli)&&(fPos==='TODOS'||c.posicion===fPos)&&(fEst==='TODOS'||coberturaEstado(c)===fEst));
 
-  let rows = db.coberturas.slice();
-  const filtered = rows.filter(c =>
-    (fCli==='TODOS'||c.cliente===fCli) &&
-    (fPos==='TODOS'||c.posicion===fPos) &&
-    (fEst==='TODOS'||coberturaEstado(c)===fEst));
+  const cerradas=db.coberturas.filter(c=>coberturaEstado(c)==='CERRADA');
+  const abiertas=db.coberturas.filter(c=>coberturaEstado(c)==='ABIERTA');
+  const totalRes=cerradas.reduce((a,c)=>a+resultadoDe(c),0);
+  const lotesCerr=cerradas.reduce((a,c)=>a+lotesDe(c),0);
+  const ganan=cerradas.filter(c=>resultadoDe(c)>=0).length;
 
-  const totalRes = filtered.filter(c=>coberturaEstado(c)==='CERRADA').reduce((a,c)=>a+resultadoDe(c),0);
-  const abiertas = filtered.filter(c=>coberturaEstado(c)==='ABIERTA').length;
+  // chart: resultado por cliente (cerradas)
+  const porCli={};
+  cerradas.forEach(c=>{porCli[c.cliente]=(porCli[c.cliente]||0)+resultadoDe(c);});
+  const cliData=Object.entries(porCli).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
 
-  const body = db.coberturas.length===0
-    ? `<div class="empty">No hay coberturas todavía. <span class="link" onclick="go('/nueva')">Crear la primera</span>.</div>`
-    : `<div class="row" style="margin-bottom:8px">
-        <select onchange="window.__fCli=this.value;render()">
-          <option value="TODOS" ${fCli==='TODOS'?'selected':''}>Todos los clientes</option>
-          ${clientes.map(c=>`<option ${c===fCli?'selected':''}>${esc(c)}</option>`).join('')}
-        </select>
-        <select onchange="window.__fPos=this.value;render()">
-          <option value="TODOS" ${fPos==='TODOS'?'selected':''}>Toda posición</option>
-          ${MESES.map(m=>`<option ${m===fPos?'selected':''}>${m}</option>`).join('')}
-        </select>
-        <select onchange="window.__fEst=this.value;render()">
-          ${[['TODOS','Todos los estados'],['ABIERTA','Solo abiertas'],['CERRADA','Solo cerradas']].map(([v,l])=>`<option value="${v}" ${v===fEst?'selected':''}>${l}</option>`).join('')}
-        </select>
-        <span class="muted">${filtered.length} de ${db.coberturas.length}</span>
-      </div>
-      <div class="tablewrap"><table>
-        <thead>
-          <tr class="grp"><th colspan="2"></th><th colspan="4" style="border-left:2px solid var(--line)">Compra (long futuro)</th><th colspan="4" style="border-left:2px solid var(--line)">Venta (short futuro)</th><th colspan="3" style="border-left:2px solid var(--line)"></th></tr>
-          <tr class="col">
-            <th>Cliente</th><th>Pedido</th>
-            <th style="border-left:2px solid var(--line)">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th>
-            <th style="border-left:2px solid var(--line)">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th>
-            <th style="border-left:2px solid var(--line)">Posición</th><th>FND</th><th class="num">Resultado USD</th>
-          </tr>
-        </thead>
-        <tbody>${filtered.map(c=>{
-          const est = coberturaEstado(c);
-          const res = resultadoDe(c);
-          const cOpen = !legOk(c.compra), vOpen = !legOk(c.venta);
-          const cls = est==='ABIERTA' ? 'open' : '';
-          return `<tr style="cursor:pointer" onclick="go('/cobertura/${c.id}')">
-            <td><b>${esc(c.cliente||'—')}</b></td><td>${esc(c.pedido||'')}</td>
-            <td class="${cOpen?'open':''}" style="border-left:2px solid var(--line)">${esc(c.compra?.codigoHP||'')}</td>
-            <td class="${cOpen?'open':''}">${c.compra?.fecha||''}</td>
-            <td class="num ${cOpen?'open':''}">${c.compra?fmt(c.compra.sacos60):''}</td>
-            <td class="num ${cOpen?'open':''}">${px(c.compra?.precio)}</td>
-            <td class="${vOpen?'open':''}" style="border-left:2px solid var(--line)">${esc(c.venta?.codigoHP||'')}</td>
-            <td class="${vOpen?'open':''}">${c.venta?.fecha||''}</td>
-            <td class="num ${vOpen?'open':''}">${c.venta?fmt(c.venta.sacos60):''}</td>
-            <td class="num ${vOpen?'open':''}">${px(c.venta?.precio)}</td>
-            <td style="border-left:2px solid var(--line)">${esc(c.posicion)} <span class="muted">${nemo(c.posicion)}</span></td>
-            <td>${c.fnd||''}</td>
-            <td class="num">${res===null?`<span class="pill abierta">abierta</span>`:`<span class="${res>=0?'pos-usd':'neg-usd'}">${money(res)}</span>`}</td>
-          </tr>`;}).join('')}</tbody>
-        <tfoot><tr><td colspan="12" class="num"><b>Resultado neto (cerradas)</b></td><td class="num"><b class="${totalRes>=0?'pos-usd':'neg-usd'}">${money(totalRes)}</b></td></tr></tfoot>
-      </table></div>
-      <div class="legend" style="margin-top:10px">
-        <span><span class="sw" style="background:var(--open)"></span><b>Abierta</b>: falta cruzar una pata (compra o venta sin cerrar)</span>
-        <span><span class="sw" style="background:#dcfce7"></span><b>Cerrada</b>: compra y venta neteadas → Resultado calculado</span>
-        <span>· ${abiertas} abierta(s) en el filtro</span>
-      </div>`;
+  if(db.coberturas.length===0){
+    app.innerHTML=header('Dashboard','Libro de coberturas','Cruce de compra/venta de futuros y su resultado.',true)
+      +`<div class="empty">No hay coberturas todavía. <span class="link" onclick="go('/nueva')">Crear la primera</span>.</div>`;
+    return;
+  }
 
-  app.innerHTML = `
-    <div class="row">
-      <h1>Libro de coberturas</h1>
-      <div class="spacer"></div>
-      <button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button>
-      <button class="btn-primary" onclick="go('/nueva')">+ Nueva cobertura</button>
-    </div>
-    <div style="margin-top:12px">${body}</div>`;
+  const kpis=`<div class="kpis">
+    <div class="kpi accent"><div class="lbl">Resultado neto</div><div class="big ${totalRes>=0?'pos-usd':'neg-usd'}">$${money0(totalRes)}</div><div class="foot">USD · ${cerradas.length} coberturas cerradas</div></div>
+    <div class="kpi"><div class="lbl">Cerradas</div><div class="big">${cerradas.length}</div><div class="foot">${ganan} con ganancia</div></div>
+    <div class="kpi ${abiertas.length?'warn':''}"><div class="lbl">Abiertas</div><div class="big">${abiertas.length}</div><div class="foot">${abiertas.length?'requieren cruzar pata':'todo neteado'}</div></div>
+    <div class="kpi"><div class="lbl">Lotes cerrados</div><div class="big">${lot(lotesCerr)}</div><div class="foot">${fmt(lotesCerr*KC_CONTRACT_LB)} lb cubiertas</div></div>
+  </div>`;
+
+  const charts=`<div class="charts">
+    <div class="card"><div class="card-h"><h3>Resultado por cliente</h3><span class="hint">USD · coberturas cerradas</span></div>
+      <div class="chart-body">${hbars(cliData)}</div></div>
+    <div class="card"><div class="card-h"><h3>Estado de coberturas</h3></div>
+      <div class="chart-body" style="display:flex;align-items:center;gap:18px;justify-content:center">
+        ${donut([{label:'Cerradas',value:cerradas.length,color:'var(--teal)'},{label:'Abiertas',value:abiertas.length,color:'var(--amber)'}],{centerTop:db.coberturas.length,centerBot:'TOTAL'})}
+        <div style="font-size:13px;line-height:2">
+          <div><span class="sw" style="background:var(--teal)"></span>Cerradas <b>${cerradas.length}</b></div>
+          <div><span class="sw" style="background:var(--amber)"></span>Abiertas <b>${abiertas.length}</b></div>
+        </div>
+      </div></div>
+  </div>`;
+
+  const filters=`<div class="filters">
+    <select onchange="window.__fCli=this.value;render()"><option value="TODOS" ${fCli==='TODOS'?'selected':''}>Todos los clientes</option>${clientes.map(c=>`<option ${c===fCli?'selected':''}>${esc(c)}</option>`).join('')}</select>
+    <select onchange="window.__fPos=this.value;render()"><option value="TODOS" ${fPos==='TODOS'?'selected':''}>Toda posición</option>${MESES.map(m=>`<option ${m===fPos?'selected':''}>${m}</option>`).join('')}</select>
+    <select onchange="window.__fEst=this.value;render()">${[['TODOS','Todos los estados'],['ABIERTA','Solo abiertas'],['CERRADA','Solo cerradas']].map(([v,l])=>`<option value="${v}" ${v===fEst?'selected':''}>${l}</option>`).join('')}</select>
+    <span class="count">${filtered.length} de ${db.coberturas.length}</span>
+  </div>`;
+
+  const rows=filtered.map(c=>{
+    const est=coberturaEstado(c),res=resultadoDe(c),cO=!legOk(c.compra),vO=!legOk(c.venta);
+    return `<tr onclick="go('/cobertura/${c.id}')">
+      <td><span class="cli">${esc(c.cliente||'—')}</span>${c.pedido?`<div class="ped">${esc(c.pedido)}</div>`:''}</td>
+      <td class="sep ${cO?'open':''}">${esc(c.compra?.codigoHP||'')}</td><td class="${cO?'open':''}">${c.compra?.fecha||''}</td><td class="num ${cO?'open':''}">${c.compra?fmt(c.compra.sacos60):''}</td><td class="num ${cO?'open':''}">${px(c.compra?.precio)}</td>
+      <td class="sep ${vO?'open':''}">${esc(c.venta?.codigoHP||'')}</td><td class="${vO?'open':''}">${c.venta?.fecha||''}</td><td class="num ${vO?'open':''}">${c.venta?fmt(c.venta.sacos60):''}</td><td class="num ${vO?'open':''}">${px(c.venta?.precio)}</td>
+      <td class="sep"><span class="posbadge">${esc(c.posicion)}</span> <span class="nemo">${nemo(c.posicion)}</span></td><td>${c.fnd||''}</td>
+      <td class="num">${res===null?`<span class="pill abierta">abierta</span>`:`<b class="${res>=0?'pos-usd':'neg-usd'}">${money(res)}</b>`}</td>
+    </tr>`;}).join('');
+
+  const table=`<div class="tablewrap"><div class="tscroll"><table>
+    <thead>
+      <tr class="grp"><th></th><th colspan="4" class="sep">Compra · long futuro</th><th colspan="4" class="sep">Venta · short futuro</th><th colspan="3" class="sep"></th></tr>
+      <tr class="col"><th>Cliente / Pedido</th><th class="sep">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Posición</th><th>FND</th><th class="num">Resultado USD</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="11" class="num">Resultado neto (cerradas en el filtro)</td><td class="num"><span class="${totalRes>=0?'pos-usd':'neg-usd'}" style="font-size:15px">$${money(totalRes)}</span></td></tr></tfoot>
+  </table></div></div>
+  <div class="legend"><span><span class="sw" style="background:rgba(201,138,46,.5)"></span><b>Abierta</b>: falta cruzar una pata</span><span><span class="sw" style="background:rgba(47,107,79,.4)"></span><b>Cerrada</b>: compra y venta neteadas → Resultado</span><span>· clic en una fila para el detalle</span></div>`;
+
+  app.innerHTML=header('Dashboard','Libro de coberturas','Cruce compra/venta de futuros y su resultado, por cliente y pedido.',true)+kpis+charts+filters+table;
 }
 
-/* ============ FORM (nueva / editar) ============ */
-function renderForm(app, id) {
-  const db = loadDb();
-  const c = id ? db.coberturas.find(x=>x.id===id) : null;
-  const clientes = [...new Set(db.coberturas.map(x=>x.cliente).filter(Boolean))].sort();
-  const g = (path, d='') => { // getter seguro
-    if (!c) return d;
-    const parts = path.split('.'); let v = c; for (const p of parts) v = v?.[p];
-    return (v===null||v===undefined) ? d : v;
-  };
-  app.innerHTML = `
-    <div class="row"><span class="link" onclick="go('/libro')">← Libro</span><h1>${id?'Editar':'Nueva'} cobertura</h1></div>
-    <form id="cf" onsubmit="return submitCobertura(event, ${id?`'${id}'`:'null'})" style="margin-top:12px; max-width:820px">
-      <fieldset><legend>Operación</legend>
-        <div class="grid2">
+function header(kicker,title,desc,withActions){
+  return `<div class="phead"><div><div class="kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><div class="desc">${esc(desc)}</div></div>
+    ${withActions?`<div class="actions"><button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button><button class="btn-primary" onclick="go('/nueva')">+ Nueva cobertura</button></div>`:''}</div>`;
+}
+
+/* ============ FORM ============ */
+function renderForm(app,id){
+  const db=loadDb();const c=id?db.coberturas.find(x=>x.id===id):null;
+  const clientes=[...new Set(db.coberturas.map(x=>x.cliente).filter(Boolean))].sort();
+  const g=(path,d='')=>{if(!c)return d;const ps=path.split('.');let v=c;for(const p of ps)v=v?.[p];return(v===null||v===undefined)?d:v;};
+  const openC=c&&!legOk(c.compra),openV=c&&!legOk(c.venta);
+  app.innerHTML=header('Captura',id?'Editar cobertura':'Nueva cobertura','Registra las patas de compra y venta del futuro.',false)
+    +`<div class="backlink" onclick="go('/libro')">← Volver al libro</div>
+    <form id="cf" onsubmit="return submitCobertura(event,${id?`'${id}'`:'null'})" style="margin-top:14px;max-width:860px">
+      <fieldset><legend>Operación comercial</legend>
+        <div class="grid3">
           <label class="field">Cliente<input name="cliente" required list="cli" value="${esc(g('cliente'))}" placeholder="Katz (Serengueti)"></label>
           <datalist id="cli">${clientes.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
           <label class="field">Pedido<input name="pedido" value="${esc(g('pedido'))}" placeholder="S00443"></label>
           <label class="field">Producto (opcional)<input name="producto" value="${esc(g('producto'))}"></label>
           <label class="field">Incoterm<input name="incoterm" value="${esc(g('incoterm','FOB'))}"></label>
-          <label class="field">Posición (mes del futuro)
-            <select name="posicion">${MESES.map(m=>`<option ${m===g('posicion','Septiembre')?'selected':''}>${m}</option>`).join('')}</select>
-          </label>
+          <label class="field">Posición (mes)<select name="posicion">${MESES.map(m=>`<option ${m===g('posicion','Septiembre')?'selected':''}>${m}</option>`).join('')}</select></label>
           <label class="field">FND (First Notice Day)<input name="fnd" type="date" value="${esc(g('fnd'))}"></label>
         </div>
       </fieldset>
-      <div class="legboxes" style="margin-top:12px">
-        <fieldset><legend>Compra (compramos el futuro — long)</legend>
-          <label class="field">Código Hedge Point<input name="compra_codigoHP" value="${esc(g('compra.codigoHP'))}" placeholder="1506855"></label>
-          <label class="field">Fecha<input name="compra_fecha" type="date" value="${esc(g('compra.fecha'))}"></label>
-          <label class="field">Cantidad (sacos 60 kg)<input name="compra_sacos60" type="number" step="any" value="${esc(g('compra.sacos60'))}"></label>
-          <label class="field">Precio (USD/lb)<input name="compra_precio" type="number" step="any" value="${esc(g('compra.precio'))}"></label>
-          <div class="muted">Deja en blanco si esta pata aún no existe (quedará ABIERTA).</div>
+      <div class="grid2" style="margin-top:14px">
+        <fieldset class="${openC?'open-leg':''}"><legend>Compra — long futuro</legend>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <label class="field">Código Hedge Point<input name="compra_codigoHP" value="${esc(g('compra.codigoHP'))}" placeholder="1506855"></label>
+            <label class="field">Fecha<input name="compra_fecha" type="date" value="${esc(g('compra.fecha'))}"></label>
+            <label class="field">Cantidad (sacos 60 kg)<input name="compra_sacos60" type="number" step="any" value="${esc(g('compra.sacos60'))}"></label>
+            <label class="field">Precio (USD/lb)<input name="compra_precio" type="number" step="any" value="${esc(g('compra.precio'))}"></label>
+          </div>
+          <div style="font-size:12px;color:var(--gray);margin-top:9px">Se compra al vender al cliente. Vacío = pata abierta.</div>
         </fieldset>
-        <fieldset><legend>Venta (vendemos el futuro — short)</legend>
-          <label class="field">Código Hedge Point<input name="venta_codigoHP" value="${esc(g('venta.codigoHP'))}" placeholder="1504300"></label>
-          <label class="field">Fecha<input name="venta_fecha" type="date" value="${esc(g('venta.fecha'))}"></label>
-          <label class="field">Cantidad (sacos 60 kg)<input name="venta_sacos60" type="number" step="any" value="${esc(g('venta.sacos60'))}"></label>
-          <label class="field">Precio (USD/lb)<input name="venta_precio" type="number" step="any" value="${esc(g('venta.precio'))}"></label>
-          <div class="muted">Al completar ambas patas, el Resultado se calcula solo.</div>
+        <fieldset class="${openV?'open-leg':''}"><legend>Venta — short futuro</legend>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <label class="field">Código Hedge Point<input name="venta_codigoHP" value="${esc(g('venta.codigoHP'))}" placeholder="1504300"></label>
+            <label class="field">Fecha<input name="venta_fecha" type="date" value="${esc(g('venta.fecha'))}"></label>
+            <label class="field">Cantidad (sacos 60 kg)<input name="venta_sacos60" type="number" step="any" value="${esc(g('venta.sacos60'))}"></label>
+            <label class="field">Precio (USD/lb)<input name="venta_precio" type="number" step="any" value="${esc(g('venta.precio'))}"></label>
+          </div>
+          <div style="font-size:12px;color:var(--gray);margin-top:9px">Se vende al comprar el café y cerrar. Al completar ambas, el Resultado se calcula solo.</div>
         </fieldset>
       </div>
-      <div class="row" style="margin-top:12px">
+      <div style="display:flex;gap:10px;margin-top:16px">
         <button class="btn-primary">${id?'Guardar cambios':'Crear cobertura'}</button>
-        ${id?`<button type="button" class="btn-danger" onclick="borrarCobertura('${id}')">Borrar cobertura</button>`:''}
+        <button type="button" class="btn-ghost" onclick="go('/libro')">Cancelar</button>
+        ${id?`<button type="button" class="btn-danger" style="margin-left:auto" onclick="borrarCobertura('${id}')">🗑 Borrar</button>`:''}
       </div>
     </form>`;
 }
-function legFrom(f, pre) {
-  const codigoHP = strOrNull(val(f, pre+'_codigoHP'));
-  const fecha = strOrNull(val(f, pre+'_fecha'));
-  const sacos60 = numOrNull(val(f, pre+'_sacos60'));
-  const precio = numOrNull(val(f, pre+'_precio'));
-  if (codigoHP===null && fecha===null && sacos60===null && precio===null) return null;
-  return { codigoHP, fecha, sacos60, precio };
-}
-function submitCobertura(e, id) {
-  e.preventDefault(); const f = e.target; const db = loadDb();
-  const data = {
-    cliente: val(f,'cliente'), pedido: strOrNull(val(f,'pedido')), producto: strOrNull(val(f,'producto')),
-    incoterm: val(f,'incoterm')||'FOB', posicion: val(f,'posicion'), fnd: strOrNull(val(f,'fnd')),
-    compra: legFrom(f,'compra'), venta: legFrom(f,'venta'),
-  };
-  if (id) { const i = db.coberturas.findIndex(x=>x.id===id); db.coberturas[i] = { ...db.coberturas[i], ...data }; }
-  else { db.coberturas.push({ id: uid(), ...data }); }
-  saveDb(db); go('/libro'); return false;
-}
-function borrarCobertura(id) {
-  if (!confirm('¿Borrar esta cobertura?')) return;
-  const db = loadDb(); db.coberturas = db.coberturas.filter(x=>x.id!==id); saveDb(db); go('/libro');
-}
+function legFrom(f,pre){const codigoHP=strOrNull(val(f,pre+'_codigoHP')),fecha=strOrNull(val(f,pre+'_fecha')),sacos60=numOrNull(val(f,pre+'_sacos60')),precio=numOrNull(val(f,pre+'_precio'));if(codigoHP===null&&fecha===null&&sacos60===null&&precio===null)return null;return{codigoHP,fecha,sacos60,precio};}
+function submitCobertura(e,id){e.preventDefault();const f=e.target,db=loadDb();
+  const data={cliente:val(f,'cliente'),pedido:strOrNull(val(f,'pedido')),producto:strOrNull(val(f,'producto')),incoterm:val(f,'incoterm')||'FOB',posicion:val(f,'posicion'),fnd:strOrNull(val(f,'fnd')),compra:legFrom(f,'compra'),venta:legFrom(f,'venta')};
+  if(id){const i=db.coberturas.findIndex(x=>x.id===id);db.coberturas[i]={...db.coberturas[i],...data};}else{db.coberturas.push({id:uid(),...data});}
+  saveDb(db);go('/libro');return false;}
+function borrarCobertura(id){if(!confirm('¿Borrar esta cobertura?'))return;const db=loadDb();db.coberturas=db.coberturas.filter(x=>x.id!==id);saveDb(db);go('/libro');}
 
 /* ============ DETALLE ============ */
-function renderDetalle(app, id) {
-  const db = loadDb(); const c = db.coberturas.find(x=>x.id===id);
-  if (!c) { app.innerHTML = `<div class="empty">No encontrada. <span class="link" onclick="go('/libro')">Volver</span></div>`; return; }
-  const est = coberturaEstado(c); const res = resultadoDe(c); const lotes = lotesDe(c);
-  const legCard = (title, leg, sub) => {
-    const open = !legOk(leg);
-    return `<fieldset ${open?'style="background:var(--open)"':''}><legend>${title} ${open?'· <span style="color:#9a3412">ABIERTA</span>':''}</legend>
-      <div class="muted">${sub}</div>
-      ${leg ? `<div style="margin-top:6px">
-        <div>Código HP: <b>${esc(leg.codigoHP||'—')}</b></div>
-        <div>Fecha: ${leg.fecha||'—'}</div>
-        <div>Cantidad: ${leg.sacos60?fmt(leg.sacos60)+' sacos 60kg':'—'} ${leg.sacos60?`(${lot(sacos60ToLotes(leg.sacos60))} lotes)`:''}</div>
-        <div>Precio: ${leg.precio!=null?px(leg.precio)+' USD/lb':'—'}</div>
-      </div>` : `<div style="margin-top:6px" class="muted">Sin datos — falta cruzar esta pata.</div>`}
-    </fieldset>`;
-  };
-  app.innerHTML = `
-    <div class="row"><span class="link" onclick="go('/libro')">← Libro</span>
-      <h1>${esc(c.cliente||'—')} ${c.pedido?'· '+esc(c.pedido):''}</h1>
-      <span class="pill ${est==='CERRADA'?'cerrada':'abierta'}">${est}</span></div>
-    <div class="grid2" style="margin-top:12px">
-      <div class="card">
-        <div class="muted">POSICIÓN</div>
-        <div class="pos">${esc(c.posicion)} <span class="muted" style="font-size:14px">${nemo(c.posicion)}</span></div>
-        <div class="muted" style="margin-top:6px">FND: ${c.fnd||'—'} · Incoterm: ${esc(c.incoterm||'')} ${c.producto?'· '+esc(c.producto):''}</div>
+function renderDetalle(app,id){
+  const db=loadDb(),c=db.coberturas.find(x=>x.id===id);
+  if(!c){app.innerHTML=`<div class="empty">No encontrada. <span class="link" onclick="go('/libro')">Volver</span></div>`;return;}
+  const est=coberturaEstado(c),res=resultadoDe(c),lotes=lotesDe(c);
+  const legCard=(title,leg,sub)=>{const open=!legOk(leg);return `<fieldset class="${open?'open-leg':''}"><legend>${title}${open?' · <span style="color:#9a6a16">ABIERTA</span>':''}</legend>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:8px">${sub}</div>
+    ${leg?`<div class="kv">Código HP: <b>${esc(leg.codigoHP||'—')}</b></div><div class="kv">Fecha: <b>${leg.fecha||'—'}</b></div><div class="kv">Cantidad: <b>${leg.sacos60?fmt(leg.sacos60)+' sacos 60kg':'—'}</b> ${leg.sacos60?`<span class="nemo">(${lot(sacos60ToLotes(leg.sacos60))} lotes)</span>`:''}</div><div class="kv">Precio: <b>${leg.precio!=null?px(leg.precio)+' USD/lb':'—'}</b></div>`:`<div class="kv" style="color:var(--gray)">Falta cruzar esta pata.</div>`}
+    </fieldset>`;};
+  app.innerHTML=header('Detalle',c.cliente||'—',c.pedido?'Pedido '+c.pedido:'Cobertura de futuros',false)
+    +`<div class="backlink" onclick="go('/libro')">← Volver al libro</div>
+    <div class="detail-grid" style="margin-top:14px">
+      <div class="card pad">
+        <div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Posición</div>
+        <div style="font-family:var(--serif);font-size:30px;font-weight:700;margin-top:6px">${esc(c.posicion)} <span class="nemo" style="font-size:15px">${nemo(c.posicion)}</span></div>
+        <div class="kv" style="margin-top:10px">FND: <b>${c.fnd||'—'}</b> · Incoterm: <b>${esc(c.incoterm||'')}</b> ${c.producto?'· '+esc(c.producto):''}</div>
+        <div style="margin-top:12px"><span class="pill ${est==='CERRADA'?'cerrada':'abierta'}">${est}</span></div>
       </div>
-      <div class="card">
-        <div class="muted">RESULTADO DE LA COBERTURA (USD)</div>
-        <div class="big ${res===null?'':(res>=0?'pos-usd':'neg-usd')}">${res===null?'—':money(res)}</div>
-        <div class="muted" style="margin-top:4px">${res===null?'Se calcula al cerrar ambas patas.':`(venta ${px(c.venta.precio)} − compra ${px(c.compra.precio)}) × ${lot(lotes)} lotes × 37.500 lb`}</div>
+      <div class="card pad" style="border-color:${res===null?'var(--line)':(res>=0?'#bcd8c9':'#e7c3b4')}">
+        <div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Resultado de la cobertura</div>
+        <div class="bignum ${res===null?'':(res>=0?'pos-usd':'neg-usd')}" style="margin-top:8px">${res===null?'—':'$'+money(res)}</div>
+        <div class="kv" style="margin-top:8px;color:var(--gray)">${res===null?'Se calcula al cerrar ambas patas.':`(venta ${px(c.venta.precio)} − compra ${px(c.compra.precio)}) × ${lot(lotes)} lotes × 37.500 lb`}</div>
       </div>
     </div>
-    <div class="legboxes" style="margin-top:12px">
-      ${legCard('Compra (long futuro)', c.compra, 'Cuando vendemos al cliente, compramos el futuro.')}
-      ${legCard('Venta (short futuro)', c.venta, 'Cuando compramos el café, vendemos el futuro y cerramos.')}
+    <div class="grid2" style="margin-top:14px">
+      ${legCard('Compra — long futuro',c.compra,'Cuando vendemos al cliente, compramos el futuro.')}
+      ${legCard('Venta — short futuro',c.venta,'Cuando compramos el café, vendemos el futuro y cerramos.')}
     </div>
-    <div class="row" style="margin-top:14px">
+    <div style="display:flex;gap:10px;margin-top:16px">
       <button class="btn-dark" onclick="go('/editar/${c.id}')">✎ Editar / completar pata</button>
       <button class="btn-danger" onclick="borrarCobertura('${c.id}')">🗑 Borrar</button>
     </div>`;
 }
 
 /* ============ FX ============ */
-function renderFx(app) {
-  const db = loadDb();
-  app.innerHTML = `
-    <div class="row"><h1>Coberturas FX</h1><div class="spacer"></div></div>
-    <p class="muted" style="margin-top:4px">Cobertura de tasa de cambio (COP/USD, EUR/USD) del ingreso/egreso de cada pedido. El resultado marcado a mercado llega con el feed de precios (fase siguiente).</p>
-    <form id="fxf" class="row" style="margin:12px 0" onsubmit="return submitFx(event)">
+function renderFx(app){
+  const db=loadDb();
+  app.innerHTML=header('Divisas','Coberturas FX','Cobertura de tasa de cambio (COP/USD, EUR/USD) del flujo de cada pedido.',false)
+    +`<form id="fxf" class="filters" style="gap:9px" onsubmit="return submitFx(event)">
       <select name="par"><option>USDCOP</option><option>EURUSD</option></select>
       <select name="tipo"><option>FORWARD</option><option>OPCION</option></select>
       <select name="lado"><option value="VENTA">Vendo divisa</option><option value="COMPRA">Compro divisa</option></select>
@@ -353,49 +441,31 @@ function renderFx(app) {
       <input name="fecha" type="date" required>
       <input name="vencimiento" type="date">
       <input name="pedido" placeholder="pedido" style="width:90px">
-      <input name="notas" placeholder="notas" style="width:160px">
-      <button class="btn-primary">+ FX</button>
+      <input name="notas" placeholder="notas" style="width:170px">
+      <button class="btn-primary btn-sm">+ Agregar FX</button>
     </form>
-    <div class="tablewrap"><table>
+    <div class="tablewrap"><div class="tscroll"><table>
       <thead><tr class="col"><th>Par</th><th>Tipo</th><th>Lado</th><th class="num">Nocional</th><th class="num">Tasa</th><th>Fecha</th><th>Vcto</th><th>Pedido</th><th>Notas</th><th></th></tr></thead>
-      <tbody>${db.fx.length===0?`<tr><td colspan="10" class="muted" style="text-align:center;padding:16px">Sin coberturas FX.</td></tr>`:
-        db.fx.map(x=>`<tr>
-          <td><b>${x.par}</b></td><td>${x.tipo}</td><td>${x.lado==='VENTA'?'Vende':'Compra'}</td>
-          <td class="num">${fmt(x.nocional)}</td><td class="num">${px(x.tasa)}</td>
-          <td>${x.fecha||''}</td><td>${x.vencimiento||''}</td><td>${esc(x.pedido||'')}</td><td>${esc(x.notas||'')}</td>
-          <td><span class="link" onclick="borrarFx('${x.id}')">borrar</span></td>
-        </tr>`).join('')}</tbody>
-    </table></div>`;
+      <tbody>${db.fx.length===0?`<tr><td colspan="10" style="text-align:center;padding:26px;color:var(--gray)">Sin coberturas FX. Agrega la primera arriba.</td></tr>`:
+        db.fx.map(x=>`<tr style="cursor:default"><td><b>${x.par}</b></td><td>${x.tipo}</td><td>${x.lado==='VENTA'?'Vende':'Compra'}</td><td class="num">${fmt(x.nocional)}</td><td class="num">${px(x.tasa)}</td><td>${x.fecha||''}</td><td>${x.vencimiento||''}</td><td>${esc(x.pedido||'')}</td><td>${esc(x.notas||'')}</td><td><span class="link" onclick="borrarFx('${x.id}')">borrar</span></td></tr>`).join('')}</tbody>
+    </table></div></div>
+    <div class="legend"><span>El resultado marcado a mercado (mark-to-market) llega con el feed de precios en la siguiente fase.</span></div>`;
 }
-function submitFx(e) {
-  e.preventDefault(); const f=e.target; const db=loadDb();
-  db.fx.push({ id:uid(), par:val(f,'par'), tipo:val(f,'tipo'), lado:val(f,'lado'),
-    nocional:Number(val(f,'nocional')), tasa:Number(val(f,'tasa')), fecha:val(f,'fecha'),
-    vencimiento:strOrNull(val(f,'vencimiento')), pedido:strOrNull(val(f,'pedido')), notas:strOrNull(val(f,'notas')) });
-  saveDb(db); render(); return false;
-}
-function borrarFx(id){ if(!confirm('¿Borrar esta cobertura FX?'))return; const db=loadDb(); db.fx=db.fx.filter(x=>x.id!==id); saveDb(db); render(); }
+function submitFx(e){e.preventDefault();const f=e.target,db=loadDb();db.fx.push({id:uid(),par:val(f,'par'),tipo:val(f,'tipo'),lado:val(f,'lado'),nocional:Number(val(f,'nocional')),tasa:Number(val(f,'tasa')),fecha:val(f,'fecha'),vencimiento:strOrNull(val(f,'vencimiento')),pedido:strOrNull(val(f,'pedido')),notas:strOrNull(val(f,'notas'))});saveDb(db);render();return false;}
+function borrarFx(id){if(!confirm('¿Borrar esta cobertura FX?'))return;const db=loadDb();db.fx=db.fx.filter(x=>x.id!==id);saveDb(db);render();}
 
 /* ============ EXPORT CSV ============ */
-function exportCsv() {
-  const db = loadDb();
-  const H = ['Cliente','Pedido','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Posicion','Nemotecnico','FND','Estado','Resultado_USD'];
-  const e = (v)=>{ const s=String(v??''); return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s; };
-  const lines = [H.join(',')];
-  for (const c of db.coberturas) {
-    const res = resultadoDe(c);
-    lines.push([c.cliente, c.pedido, c.compra?.codigoHP, c.compra?.fecha, c.compra?.sacos60,
-      c.compra?legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'':'', c.compra?.precio,
-      c.venta?.codigoHP, c.venta?.fecha, c.venta?.sacos60,
-      c.venta?legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'':'', c.venta?.precio,
-      c.posicion, nemo(c.posicion), c.fnd, coberturaEstado(c), res===null?'':res.toFixed(2)].map(e).join(','));
-  }
-  const blob = new Blob(['﻿'+lines.join('\n')], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'coberturas_equation_' + new Date().toISOString().slice(0,10) + '.csv'; a.click();
+function exportCsv(){
+  const db=loadDb();
+  const H=['Cliente','Pedido','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Posicion','Nemotecnico','FND','Estado','Resultado_USD'];
+  const e=v=>{const s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;};
+  const L=[H.join(',')];
+  for(const c of db.coberturas){const res=resultadoDe(c);L.push([c.cliente,c.pedido,c.compra?.codigoHP,c.compra?.fecha,c.compra?.sacos60,c.compra&&legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'',c.compra?.precio,c.venta?.codigoHP,c.venta?.fecha,c.venta?.sacos60,c.venta&&legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'',c.venta?.precio,c.posicion,nemo(c.posicion),c.fnd,coberturaEstado(c),res===null?'':res.toFixed(2)].map(e).join(','));}
+  const blob=new Blob(['﻿'+L.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='coberturas_equation_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
-window.addEventListener('hashchange', render);
+window.addEventListener('hashchange',render);
 render();
 </script>
 </body>
