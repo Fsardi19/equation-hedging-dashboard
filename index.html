@@ -88,6 +88,14 @@
   .pill{font-size:10.5px;padding:3px 9px;border-radius:999px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;display:inline-block;}
   .pill.cerrada{background:rgba(47,107,79,.12);color:var(--green);} .pill.abierta{background:rgba(201,138,46,.16);color:#9a6a16;}
   .posbadge{font-family:var(--serif);font-weight:700;} .nemo{color:var(--tan-2);font-size:11px;font-weight:700;letter-spacing:.05em;}
+  .rec{font-size:10px;padding:3px 8px;border-radius:7px;font-weight:800;letter-spacing:.02em;display:inline-block;white-space:nowrap;}
+  .rec small{font-weight:700;opacity:.72;margin-left:4px;font-size:9px;}
+  .rec-crit{background:rgba(180,82,46,.14);color:var(--brick);} .rec-take{background:rgba(47,107,79,.14);color:var(--green);}
+  .rec-warn{background:rgba(201,138,46,.16);color:#9a6a16;} .rec-hold{background:#edefec;color:var(--gray);}
+  .rec-none{background:transparent;color:var(--tan-2);}
+  .metrics{display:flex;gap:22px;flex-wrap:wrap;margin-top:12px;}
+  .metric span{color:var(--gray);text-transform:uppercase;letter-spacing:.08em;font-size:9.5px;font-weight:700;display:block;}
+  .metric b{font-family:var(--serif);font-size:16px;color:var(--ink-2);font-weight:700;}
   .legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--gray);margin-top:14px;align-items:center;}
   .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:6px;}
   .link{color:var(--teal-2);border-bottom:1px solid var(--tan-2);cursor:pointer;font-weight:700;}
@@ -153,8 +161,37 @@ function resultadoValorado(c,cierre){if(coberturaEstado(c)==='CERRADA'||cierre==
   return null;}
 function resultadoMostrado(c,db){const est=coberturaEstado(c);if(est==='CERRADA')return resultadoRealizado(c);return resultadoValorado(c,(db.cierres||{})[posKey(c)]);}
 
+/* --- Motor de recomendacion (determinista, politica conservadora) --- */
+const POL={sigmaDefault:0.35,z95:1.645,bufferFND:5,tpSigma:1.5,reviewSigma:-1};
+const getSigma=(db,c)=>((db.sigmas||{})[posKey(c)] ?? POL.sigmaDefault);
+function bizDays(from,to){if(!to)return null;const e=new Date(to);if(isNaN(e))return null;let d=new Date(from);d.setHours(0,0,0,0);e.setHours(0,0,0,0);let n=0,g=0;const s=e>=d?1:-1;while(d.getTime()!==e.getTime()&&g++<4000){d.setDate(d.getDate()+s);const w=d.getDay();if(w!==0&&w!==6)n+=s;}return n;}
+function nemoSig(c){const order=['Marzo','Mayo','Julio','Septiembre','Diciembre'];const ni=((MES_IDX[c.mes]??0)+1)%5;const ny=ni===0?c.anio+1:c.anio;return `KC${NEMO[order[ni]]}${String(ny).slice(-1)}`;}
+function recomendacion(c,db){
+  const est=coberturaEstado(c);
+  if(est==='CERRADA')return{accion:'—',tono:'rec-none',micro:'',detalle:'Resultado realizado; contabilizar.',m:null};
+  const cierre=(db.cierres||{})[posKey(c)],sigma=getSigma(db,c);
+  const tFND=c.fnd?bizDays(new Date(),c.fnd):null;
+  const leg=legOk(c.compra)?c.compra:(legOk(c.venta)?c.venta:null);
+  const lotesAb=leg?sacos60ToLotes(leg.sacos60):0, E_lb=lotesAb*KC_CONTRACT_LB;
+  const Pmkt=cierre, plVal=resultadoValorado(c,cierre);
+  const hDays=(tFND!=null&&tFND>0)?tFND:null;
+  const sigma_h=hDays!=null?sigma*Math.sqrt(hDays/252):null;
+  const banda1=(Pmkt!=null&&sigma_h!=null)?E_lb*Pmkt*sigma_h:null;
+  const var95=banda1!=null?POL.z95*banda1:null;
+  const nsig=(banda1&&plVal!=null&&banda1!==0)?plVal/banda1:null;
+  const m={tFND,E_lb,lotesAb,sigma,sigma_h,banda1,var95,plVal,nsig};
+  if(tFND!=null&&tFND<=POL.bufferFND)return{accion:'ROLAR / CERRAR',tono:'rec-crit',micro:`FND ${tFND}d`,detalle:`FND en ${tFND} días hábiles → rolar a ${nemoSig(c)} o cruzar la pata para evitar el aviso.`,m};
+  if(nsig!=null){
+    if(nsig>=POL.tpSigma&&plVal>0)return{accion:'CERRAR / CRUZAR',tono:'rec-take',micro:`+${nsig.toFixed(1)}σ`,detalle:`Movimiento +${nsig.toFixed(1)}σ a favor: capturar ${usd(plVal)} cruzando la pata.`,m};
+    if(plVal<=-var95||nsig<=POL.reviewSigma)return{accion:'REVISAR / CUBRIR',tono:'rec-warn',micro:`${nsig.toFixed(1)}σ`,detalle:`Pérdida abierta ${usd(plVal)} ≈ ${nsig.toFixed(1)}σ · supera VaR95 ${usd(var95)}.`,m};
+    return{accion:'MANTENER',tono:'rec-hold',micro:`${nsig>=0?'+':''}${nsig.toFixed(1)}σ`,detalle:`En banda (${nsig.toFixed(1)}σ) · VaR95 ${usd(var95)} · ${tFND!=null?tFND+'d a FND':'sin FND'}.`,m};
+  }
+  return{accion:'MANTENER',tono:'rec-hold',micro:tFND!=null?`${tFND}d`:'',detalle:`Define precio de cierre y σ de ${posKey(c)} para la señal de riesgo completa.`,m};
+}
+function recChip(r,fs){return `<span class="rec ${r.tono}"${fs?` style="font-size:12px"`:''}>${r.accion}${r.micro?`<small>${r.micro}</small>`:''}</span>`;}
+
 /* ============ STORE ============ */
-const KEY='eq_cob_v3', EMPTY={coberturas:[],fx:[],cierres:{}};
+const KEY='eq_cob_v3', EMPTY={coberturas:[],fx:[],cierres:{},sigmas:{}};
 function seed(){
   const cob=o=>Object.assign({id:uid(),incoterm:'FOB',proveedor:'',producto:'',loteOIC:'',cliente:'',pedido:'',mes:'Septiembre',anio:2026,fnd:'',compra:null,venta:null},o);
   const leg=(codigoHP,fecha,sacos60,precio)=>({codigoHP,fecha,sacos60,precio});
@@ -167,7 +204,7 @@ function seed(){
     cob({cliente:'Royal Coffee Inc',pedido:'S00454',loteOIC:'3-0659-00161',mes:'Diciembre',fnd:'2026-11-20',compra:leg('1524797','2026-08-03',175,3.101),venta:null}),
   ],fx:[
     {id:uid(),par:'USDCOP',tipo:'FORWARD',lado:'VENTA',nocional:200000,tasa:4050,fecha:'2026-07-02',vencimiento:'2026-09-15',pedido:'S00443',notas:'Ingreso USD venta Katz'},
-  ],cierres:{'Septiembre 2026':3.321}};
+  ],cierres:{'Septiembre 2026':3.321,'Diciembre 2026':3.20},sigmas:{}};
 }
 function loadDb(){const raw=localStorage.getItem(KEY);if(!raw){const s=seed();localStorage.setItem(KEY,JSON.stringify(s));return s;}try{return{...structuredClone(EMPTY),...JSON.parse(raw)};}catch{return structuredClone(EMPTY);}}
 function saveDb(db){localStorage.setItem(KEY,JSON.stringify(db));}
@@ -286,7 +323,7 @@ function renderLibro(app){
     <select onchange="window.__fEst=this.value;render()">${[['TODOS','Todos los estados'],['ABIERTA','Solo abiertas'],['CERRADA','Solo cerradas']].map(([v,l])=>`<option value="${v}" ${v===fEst?'selected':''}>${l}</option>`).join('')}</select>
     <span class="count">${filtered.length} de ${db.coberturas.length} · clic en encabezados para ordenar</span></div>`;
 
-  const rows=filtered.map(c=>{const est=coberturaEstado(c),r=resultadoMostrado(c,db),cO=!legOk(c.compra),vO=!legOk(c.venta),val=est==='ABIERTA';
+  const rows=filtered.map(c=>{const est=coberturaEstado(c),r=resultadoMostrado(c,db),cO=!legOk(c.compra),vO=!legOk(c.venta),val=est==='ABIERTA',rec=recomendacion(c,db);
     return `<tr onclick="go('/cobertura/${c.id}')">
       <td><span class="cli">${esc(c.cliente||'—')}</span>${c.pedido?`<div class="ped">${esc(c.pedido)}</div>`:''}</td>
       <td class="oic">${esc(c.loteOIC||'—')}</td>
@@ -294,15 +331,16 @@ function renderLibro(app){
       <td class="sep ${vO?'open':''}">${esc(c.venta?.codigoHP||'')}</td><td class="num ${vO?'open':''}">${c.venta?fmt(c.venta.sacos60):''}</td><td class="num ${vO?'open':''}">${px(c.venta?.precio)}</td>
       <td class="sep"><span class="posbadge">${esc(c.mes)} ${c.anio}</span> <span class="nemo">${nemo(c)}</span></td>
       <td class="num">${r==null?`<span class="pill abierta">sin cierre</span>`:`<b class="${r>=0?'pos-usd':'neg-usd'}">${money(r)}</b>${val?' <span class="nemo">val.</span>':''}`}</td>
+      <td class="sep">${recChip(rec)}</td>
     </tr>`;}).join('');
 
   const table=`<div class="tablewrap"><div class="tscroll"><table>
     <thead>
-      <tr class="grp"><th colspan="2"></th><th colspan="3" class="sep">Compra · long</th><th colspan="3" class="sep">Venta · short</th><th colspan="2" class="sep"></th></tr>
-      <tr class="col">${sortHead('cliente','Cliente / Pedido')}${sortHead('oic','Lote OIC')}<th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th>${sortHead('posicion','Posición','sep')}${sortHead('resultado','Resultado USD','num')}</tr>
+      <tr class="grp"><th colspan="2"></th><th colspan="3" class="sep">Compra · long</th><th colspan="3" class="sep">Venta · short</th><th colspan="3" class="sep"></th></tr>
+      <tr class="col">${sortHead('cliente','Cliente / Pedido')}${sortHead('oic','Lote OIC')}<th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th>${sortHead('posicion','Posición','sep')}${sortHead('resultado','Resultado USD','num')}<th class="sep">Acción sugerida</th></tr>
     </thead>
     <tbody>${rows}</tbody>
-    <tfoot><tr><td colspan="9" class="num">Realizado ${usd(resReal)} · Valorado ${usd(resVal)} · <b>Total</b></td><td class="num"><span class="${(resReal+resVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(resReal+resVal)}</span></td></tr></tfoot>
+    <tfoot><tr><td colspan="9" class="num">Realizado ${usd(resReal)} · Valorado ${usd(resVal)} · <b>Total</b></td><td class="num"><span class="${(resReal+resVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(resReal+resVal)}</span></td><td class="sep"></td></tr></tfoot>
   </table></div></div>
   <div class="legend"><span><span class="sw" style="background:rgba(201,138,46,.5)"></span><b>Abierta</b>: valorada al cierre (val.)</span><span><span class="sw" style="background:rgba(47,107,79,.4)"></span><b>Cerrada</b>: resultado realizado</span><span>· <span class="link" onclick="go('/cierre')">Cierre de mes</span> para conciliar con Hedge Point</span></div>`;
 
@@ -326,7 +364,8 @@ function renderCierre(app){
       <td><span class="posbadge">${esc(mes)} ${anio}</span> <span class="nemo">${nk}</span></td>
       <td class="num">${cer.length}</td><td class="num"><b class="${rReal>=0?'pos-usd':'neg-usd'}">${money(rReal)}</b></td>
       <td class="num">${abi.length}</td>
-      <td class="num"><input type="number" step="any" value="${cierre??''}" placeholder="cierre USD/lb" style="width:120px;text-align:right" onchange="setCierre('${esc(pk)}',this.value)"></td>
+      <td class="num"><input type="number" step="any" value="${cierre??''}" placeholder="cierre USD/lb" style="width:110px;text-align:right" onchange="setCierre('${esc(pk)}',this.value)"></td>
+      <td class="num"><input type="number" step="any" value="${db.sigmas&&db.sigmas[pk]!=null?(db.sigmas[pk]*100):''}" placeholder="35" style="width:70px;text-align:right" onchange="setSigma('${esc(pk)}',this.value)"></td>
       <td class="num">${abi.length===0?'<span class="nemo">—</span>':(cierre==null?`<span class="pill abierta">falta cierre</span>`:`<b class="${rVal>=0?'pos-usd':'neg-usd'}">${money(rVal)}</b>`)}</td>
       <td class="num"><b class="${(rReal+rVal)>=0?'pos-usd':'neg-usd'}">${money(rReal+rVal)}</b></td>
     </tr>`;}).join('');
@@ -334,13 +373,14 @@ function renderCierre(app){
   app.innerHTML=header('Conciliación','Cierre de mes','Valora las posiciones abiertas al precio de cierre y concilia el total por posición contra el extracto de Hedge Point.',`<button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button>`)
     +`<div class="card" style="padding:0;overflow:hidden">
       <div class="tscroll"><table>
-        <thead><tr class="col"><th>Posición</th><th class="num">Cerradas</th><th class="num">Resultado realizado</th><th class="num">Abiertas</th><th class="num">Precio cierre (USD/lb)</th><th class="num">Resultado valorado</th><th class="num">Total posición</th></tr></thead>
-        <tbody>${rows||`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray)">Sin posiciones.</td></tr>`}</tbody>
-        <tfoot><tr><td>TOTAL</td><td></td><td class="num"><b class="${gReal>=0?'pos-usd':'neg-usd'}">${money(gReal)}</b></td><td></td><td></td><td class="num"><b class="${gVal>=0?'pos-usd':'neg-usd'}">${money(gVal)}</b></td><td class="num"><b class="${(gReal+gVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(gReal+gVal)}</b></td></tr></tfoot>
+        <thead><tr class="col"><th>Posición</th><th class="num">Cerradas</th><th class="num">Resultado realizado</th><th class="num">Abiertas</th><th class="num">Precio cierre (USD/lb)</th><th class="num">σ anual %</th><th class="num">Resultado valorado</th><th class="num">Total posición</th></tr></thead>
+        <tbody>${rows||`<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray)">Sin posiciones.</td></tr>`}</tbody>
+        <tfoot><tr><td>TOTAL</td><td></td><td class="num"><b class="${gReal>=0?'pos-usd':'neg-usd'}">${money(gReal)}</b></td><td></td><td></td><td></td><td class="num"><b class="${gVal>=0?'pos-usd':'neg-usd'}">${money(gVal)}</b></td><td class="num"><b class="${(gReal+gVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(gReal+gVal)}</b></td></tr></tfoot>
       </table></div></div>
       <div class="legend"><span>El <b>precio de cierre</b> es el settlement del futuro al último día del mes. <b>Realizado</b> (posiciones cerradas) se contabiliza; <b>Valorado</b> (abiertas al cierre) concilia contra el extracto Hedge Point.</span></div>`;
 }
 function setCierre(pk,v){const db=loadDb();db.cierres=db.cierres||{};if(v===''||v==null)delete db.cierres[pk];else db.cierres[pk]=Number(v);saveDb(db);render();}
+function setSigma(pk,v){const db=loadDb();db.sigmas=db.sigmas||{};if(v===''||v==null)delete db.sigmas[pk];else db.sigmas[pk]=Number(v)/100;saveDb(db);render();}
 
 /* ============ FORM ============ */
 function renderForm(app,id){
@@ -404,6 +444,18 @@ function renderDetalle(app,id){
   const db=loadDb(),c=db.coberturas.find(x=>x.id===id);
   if(!c){app.innerHTML=`<div class="empty">No encontrada. <span class="link" onclick="go('/libro')">Volver</span></div>`;return;}
   const est=coberturaEstado(c),cierre=(db.cierres||{})[posKey(c)],rReal=resultadoRealizado(c),rVal=resultadoValorado(c,cierre),lotes=lotesDe(c);
+  const rec=recomendacion(c,db);
+  const recCard=est==='CERRADA'?'':`<div class="card pad" style="margin-top:14px;border-left:4px solid ${{'rec-crit':'var(--brick)','rec-take':'var(--green)','rec-warn':'var(--amber)','rec-hold':'var(--tan-2)'}[rec.tono]||'var(--tan-2)'}">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">${recChip(rec,true)}<span style="font-size:14px;color:var(--ink-2)">${rec.detalle}</span></div>
+    ${rec.m?`<div class="metrics">
+      <div class="metric"><span>Días a FND</span><b>${rec.m.tFND??'—'}</b></div>
+      <div class="metric"><span>Exposición</span><b>${lot(rec.m.lotesAb)} <span style="font-size:10px">lot</span></b></div>
+      <div class="metric"><span>σ anual</span><b>${(rec.m.sigma*100).toFixed(0)}%</b></div>
+      <div class="metric"><span>Banda 1σ</span><b>${rec.m.banda1!=null?usd(rec.m.banda1):'—'}</b></div>
+      <div class="metric"><span>VaR 95%</span><b>${rec.m.var95!=null?usd(rec.m.var95):'—'}</b></div>
+      <div class="metric"><span>P&L en σ</span><b>${rec.m.nsig!=null?(rec.m.nsig>=0?'+':'')+rec.m.nsig.toFixed(2)+'σ':'—'}</b></div>
+    </div>`:''}
+    <div class="legend" style="margin-top:8px"><span>Señal orientativa (VaR normal; el café tiene colas gordas). σ y precio de cierre se editan en <span class="link" onclick="go('/cierre')">Cierre de mes</span>.</span></div></div>`;
   const legCard=(title,leg,sub)=>{const open=!legOk(leg);return `<fieldset class="${open?'open-leg':''}"><legend>${title}${open?' · <span style="color:#9a6a16">ABIERTA</span>':''}</legend>
     <div style="font-size:12px;color:var(--gray);margin-bottom:8px">${sub}</div>
     ${leg?`<div class="kv">Código HP: <b>${esc(leg.codigoHP||'—')}</b></div><div class="kv">Fecha: <b>${leg.fecha||'—'}</b></div><div class="kv">Cantidad: <b>${leg.sacos60?fmt(leg.sacos60)+' sacos 60kg':'—'}</b> ${leg.sacos60?`<span class="nemo">(${lot(sacos60ToLotes(leg.sacos60))} lotes)</span>`:''}</div><div class="kv">Precio: <b>${leg.precio!=null?px(leg.precio)+' USD/lb':'—'}</b></div>`:`<div class="kv" style="color:var(--gray)">Falta cruzar esta pata — se valora al precio de cierre.</div>`}
@@ -423,6 +475,7 @@ function renderDetalle(app,id){
       </div>
       <div class="card pad" style="border-color:${(est==='CERRADA'?rReal:rVal)==null?'var(--line)':((est==='CERRADA'?rReal:rVal)>=0?'#bcd8c9':'#e7c3b4')}">${resBox}</div>
     </div>
+    ${recCard}
     <div class="grid2" style="margin-top:14px">
       ${legCard('Compra — long futuro',c.compra,'Cuando vendemos al cliente, compramos el futuro.')}
       ${legCard('Venta — short futuro',c.venta,'Cuando compramos el café, vendemos el futuro y cerramos.')}
@@ -460,11 +513,11 @@ function borrarFx(id){if(!confirm('¿Borrar esta cobertura FX?'))return;const db
 /* ============ EXPORT CSV ============ */
 function exportCsv(){
   const db=loadDb();
-  const H=['Incoterm','Cliente','Pedido','Lote OIC','Proveedor','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Mes','Anio','Nemotecnico','FND','Estado','Cierre_posicion','Resultado_realizado_USD','Resultado_valorado_USD'];
+  const H=['Incoterm','Cliente','Pedido','Lote OIC','Proveedor','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Mes','Anio','Nemotecnico','FND','Estado','Cierre_posicion','Resultado_realizado_USD','Resultado_valorado_USD','Accion_sugerida','VaR95_USD','PL_en_sigma'];
   const e=v=>{const s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;};
   const L=[H.join(',')];
-  for(const c of db.coberturas){const cierre=(db.cierres||{})[posKey(c)],rr=resultadoRealizado(c),rv=resultadoValorado(c,cierre);
-    L.push([c.incoterm,c.cliente,c.pedido,c.loteOIC,c.proveedor,c.compra?.codigoHP,c.compra?.fecha,c.compra?.sacos60,c.compra&&legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'',c.compra?.precio,c.venta?.codigoHP,c.venta?.fecha,c.venta?.sacos60,c.venta&&legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'',c.venta?.precio,c.mes,c.anio,nemo(c),c.fnd,coberturaEstado(c),cierre??'',rr==null?'':rr.toFixed(2),rv==null?'':rv.toFixed(2)].map(e).join(','));}
+  for(const c of db.coberturas){const cierre=(db.cierres||{})[posKey(c)],rr=resultadoRealizado(c),rv=resultadoValorado(c,cierre),rec=recomendacion(c,db);
+    L.push([c.incoterm,c.cliente,c.pedido,c.loteOIC,c.proveedor,c.compra?.codigoHP,c.compra?.fecha,c.compra?.sacos60,c.compra&&legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'',c.compra?.precio,c.venta?.codigoHP,c.venta?.fecha,c.venta?.sacos60,c.venta&&legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'',c.venta?.precio,c.mes,c.anio,nemo(c),c.fnd,coberturaEstado(c),cierre??'',rr==null?'':rr.toFixed(2),rv==null?'':rv.toFixed(2),rec.accion,rec.m&&rec.m.var95!=null?rec.m.var95.toFixed(2):'',rec.m&&rec.m.nsig!=null?rec.m.nsig.toFixed(2):''].map(e).join(','));}
   const blob=new Blob(['﻿'+L.join('\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='coberturas_equation_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
