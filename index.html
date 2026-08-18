@@ -23,8 +23,6 @@
   body{font-family:var(--sans);background:var(--cream);color:var(--ink);font-weight:400;-webkit-font-smoothing:antialiased;}
   .num,.tnum{font-variant-numeric:tabular-nums;}
   a{color:inherit;text-decoration:none;}
-
-  /* ---------- SHELL ---------- */
   .shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh;}
   .sidebar{background:var(--teal);color:#e8ede9;display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;}
   .brand{display:flex;flex-direction:column;gap:2px;padding:6px 8px 20px;border-bottom:1px solid rgba(255,255,255,.12);}
@@ -39,18 +37,12 @@
   nav.side a.active svg{opacity:1;}
   .side-foot{margin-top:auto;font-size:11px;color:#8fa4a1;line-height:1.5;padding:12px 8px 0;border-top:1px solid rgba(255,255,255,.1);}
   .side-foot b{color:var(--tan);}
-
-  .content{min-width:0;}
-  main{padding:26px 32px 60px;max-width:1240px;}
-
-  /* ---------- HEADER ---------- */
+  .content{min-width:0;} main{padding:26px 32px 60px;max-width:1280px;}
   .phead{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px;flex-wrap:wrap;}
   .phead h1{font-family:var(--serif);font-weight:700;font-size:28px;line-height:1.1;margin:0;color:var(--ink-2);}
   .phead .kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--tan-2);margin-bottom:5px;}
   .phead .desc{font-family:var(--serif);font-style:italic;color:var(--gray);font-size:14px;margin-top:3px;}
   .phead .actions{margin-left:auto;display:flex;gap:9px;}
-
-  /* ---------- BUTTONS ---------- */
   button,.btn{font-family:var(--sans);cursor:pointer;border:none;border-radius:9px;padding:10px 16px;font-size:13.5px;font-weight:700;letter-spacing:.01em;transition:.15s;display:inline-flex;align-items:center;gap:7px;}
   .btn-primary{background:var(--teal);color:#fff;box-shadow:0 6px 16px -8px rgba(26,56,63,.7);}
   .btn-primary:hover{background:var(--teal-2);transform:translateY(-1px);}
@@ -59,86 +51,65 @@
   .btn-dark{background:var(--ink-2);color:#fff;} .btn-dark:hover{background:#000;}
   .btn-danger{background:#fff;color:var(--brick);border:1px solid #e7c3b4;} .btn-danger:hover{background:#fdf3ef;}
   .btn-sm{padding:7px 12px;font-size:12.5px;}
-
-  /* ---------- INPUTS ---------- */
   input,select,textarea{font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:9px;padding:9px 11px;transition:.15s;}
   input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal-2);box-shadow:0 0 0 3px rgba(26,56,63,.1);}
   label.field{display:flex;flex-direction:column;gap:5px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--gray);font-weight:700;}
-
-  /* ---------- CARDS ---------- */
   .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);}
   .card.pad{padding:18px 20px;}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
   .kpi{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;animation:rise .5s both;}
   .kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--tan);}
-  .kpi.accent:before{background:var(--teal);}
-  .kpi.warn:before{background:var(--amber);}
+  .kpi.accent:before{background:var(--teal);} .kpi.warn:before{background:var(--amber);} .kpi.val:before{background:var(--tan-2);}
   .kpi .lbl{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700;}
-  .kpi .big{font-family:var(--serif);font-size:29px;font-weight:700;margin-top:8px;line-height:1;color:var(--ink-2);}
+  .kpi .big{font-family:var(--serif);font-size:27px;font-weight:700;margin-top:8px;line-height:1;color:var(--ink-2);}
   .kpi .foot{font-size:12px;color:var(--gray);margin-top:7px;}
   .pos-usd{color:var(--green);} .neg-usd{color:var(--brick);}
   @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   .kpi:nth-child(2){animation-delay:.05s;}.kpi:nth-child(3){animation-delay:.1s;}.kpi:nth-child(4){animation-delay:.15s;}
-
   .charts{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-bottom:18px;}
   .card-h{display:flex;align-items:center;gap:8px;padding:15px 20px 0;}
   .card-h h3{font-family:var(--serif);font-size:16px;font-weight:700;margin:0;color:var(--ink-2);}
   .card-h .hint{font-size:11px;color:var(--gray);margin-left:auto;}
+  .card-h select{font-size:12px;padding:5px 8px;margin-left:auto;}
   .chart-body{padding:12px 18px 18px;}
-
-  /* ---------- TABLE ---------- */
   .tablewrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:var(--paper);}
   .tscroll{overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   thead tr.grp th{background:var(--sand);color:var(--teal);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;padding:9px 10px;text-align:center;}
   thead tr.col th{background:#faf8f3;color:var(--gray);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:10px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap;}
+  th.th-sort{cursor:pointer;user-select:none;} th.th-sort:hover{color:var(--teal);}
+  th .arw{color:var(--teal);font-weight:900;}
   tbody td{padding:11px 10px;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink-2);}
-  tbody tr{transition:.12s;cursor:pointer;}
-  tbody tr:hover{background:#faf8f2;}
-  tbody tr:last-child td{border-bottom:none;}
-  .num{text-align:right;font-variant-numeric:tabular-nums;}
-  .sep{border-left:2px solid var(--line-2);}
+  tbody tr{transition:.12s;cursor:pointer;} tbody tr:hover{background:#faf8f2;} tbody tr:last-child td{border-bottom:none;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;} .sep{border-left:2px solid var(--line-2);}
   td.open,th.open{background:rgba(201,138,46,.12);}
   tfoot td{padding:12px 10px;background:#faf8f3;font-weight:700;color:var(--ink-2);border-top:1px solid var(--line-2);}
-  .cli{font-weight:700;color:var(--ink-2);}
-  .ped{color:var(--gray);font-size:12px;}
-
+  .cli{font-weight:700;color:var(--ink-2);} .ped{color:var(--gray);font-size:12px;} .oic{font-size:11px;color:var(--teal-2);font-weight:700;}
   .pill{font-size:10.5px;padding:3px 9px;border-radius:999px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;display:inline-block;}
-  .pill.cerrada{background:rgba(47,107,79,.12);color:var(--green);}
-  .pill.abierta{background:rgba(201,138,46,.16);color:#9a6a16;}
-  .posbadge{font-family:var(--serif);font-weight:700;}
-  .nemo{color:var(--tan-2);font-size:11px;font-weight:700;letter-spacing:.05em;}
-
+  .pill.cerrada{background:rgba(47,107,79,.12);color:var(--green);} .pill.abierta{background:rgba(201,138,46,.16);color:#9a6a16;}
+  .posbadge{font-family:var(--serif);font-weight:700;} .nemo{color:var(--tan-2);font-size:11px;font-weight:700;letter-spacing:.05em;}
   .legend{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--gray);margin-top:14px;align-items:center;}
   .sw{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:middle;margin-right:6px;}
   .link{color:var(--teal-2);border-bottom:1px solid var(--tan-2);cursor:pointer;font-weight:700;}
   .empty{border:1.5px dashed var(--line-2);border-radius:14px;padding:44px;text-align:center;color:var(--gray);background:var(--paper);}
   .filters{display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
   .filters .count{font-size:12px;color:var(--gray);}
-
   fieldset{border:1px solid var(--line-2);border-radius:12px;padding:16px;background:var(--paper);}
   fieldset legend{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--teal);padding:0 8px;}
   fieldset.open-leg{background:rgba(201,138,46,.07);border-color:#e6cfa2;}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px;} .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
   .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   .bignum{font-family:var(--serif);font-size:38px;font-weight:700;line-height:1;}
   .kv{font-size:13.5px;color:var(--ink-2);margin-top:5px;} .kv b{font-weight:700;}
   .backlink{color:var(--teal-2);font-weight:700;cursor:pointer;font-size:13px;}
-
-  /* chart text */
-  .cl-lbl{font:600 11px var(--sans);fill:var(--ink-2);}
-  .cl-val{font:700 11px var(--sans);fill:var(--gray);}
-  .ax{stroke:var(--line-2);stroke-width:1;}
+  .cl-lbl{font:600 11px var(--sans);fill:var(--ink-2);} .cl-val{font:700 11px var(--sans);fill:var(--gray);}
   .donut-c{font-family:var(--serif);}
-
   @media (max-width:1000px){ .charts{grid-template-columns:1fr;} .kpis{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:760px){
     .shell{grid-template-columns:1fr;}
     .sidebar{position:static;height:auto;flex-direction:row;align-items:center;gap:14px;padding:12px 16px;overflow-x:auto;}
     .brand{border:none;padding:0;flex:none;} .brand .tagline,.side-foot{display:none;}
-    nav.side{flex-direction:row;margin:0;}
-    main{padding:18px;}
+    nav.side{flex-direction:row;margin:0;} main{padding:18px;}
     .grid2,.grid3,.detail-grid{grid-template-columns:1fr;}
   }
 </style>
@@ -146,27 +117,15 @@
 <body>
 <div class="shell">
   <aside class="sidebar">
-    <div class="brand">
-      <span class="mark">EQUATION</span>
-      <span class="sub">Coffee</span>
-      <span class="tagline">Cobertura con transparencia.</span>
-    </div>
+    <div class="brand"><span class="mark">EQUATION</span><span class="sub">Coffee</span><span class="tagline">Cobertura con transparencia.</span></div>
     <nav class="side">
-      <a data-v="libro" onclick="go('/libro')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg>
-        Dashboard</a>
-      <a data-v="nueva" onclick="go('/nueva')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        Nueva cobertura</a>
-      <a data-v="fx" onclick="go('/fx')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>
-        Coberturas FX</a>
+      <a data-v="libro" onclick="go('/libro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg>Dashboard</a>
+      <a data-v="nueva" onclick="go('/nueva')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nueva cobertura</a>
+      <a data-v="cierre" onclick="go('/cierre')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Cierre de mes</a>
+      <a data-v="fx" onclick="go('/fx')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>Coberturas FX</a>
     </nav>
-    <div class="side-foot">
-      <b>MVP · v2</b><br>Datos guardados en tu navegador.<br>Prototipo para pruebas.
-    </div>
+    <div class="side-foot"><b>MVP · v3</b><br>Datos en tu navegador.<br>Prototipo para pruebas.</div>
   </aside>
-
   <div class="content"><main id="app"></main></div>
 </div>
 
@@ -174,32 +133,41 @@
 /* ============ CONSTANTES / DOMINIO ============ */
 const LB_PER_KG=2.2046226218, KC_CONTRACT_LB=37500, KG_SACO_COB=60;
 const MESES=['Marzo','Mayo','Julio','Septiembre','Diciembre'];
+const MES_IDX={Marzo:0,Mayo:1,Julio:2,Septiembre:3,Diciembre:4};
 const NEMO={Marzo:'H',Mayo:'K',Julio:'N',Septiembre:'U',Diciembre:'Z'};
-const PALETTE=['#1a383f','#c9b9a1','#6a6a6a','#2f6b4f','#24505a','#b4522e','#cec1ad','#0f272c'];
+const ANIOS=[2025,2026,2027,2028];
 
 const sacos60ToLb=s=>s*KG_SACO_COB*LB_PER_KG;
-const lbToLotes=lb=>lb/KC_CONTRACT_LB;
-const sacos60ToLotes=s=>lbToLotes(sacos60ToLb(s));
+const sacos60ToLotes=s=>sacos60ToLb(s)/KC_CONTRACT_LB;
 const legOk=l=>l&&l.precio!==null&&l.precio!==undefined&&l.precio!=='';
 const coberturaEstado=c=>(legOk(c.compra)&&legOk(c.venta))?'CERRADA':'ABIERTA';
+const posKey=c=>`${c.mes} ${c.anio}`;
+const nemo=c=>NEMO[c.mes]?`KC${NEMO[c.mes]}${String(c.anio).slice(-1)}`:'';
 function lotesDe(c){const lc=legOk(c.compra)?sacos60ToLotes(c.compra.sacos60):null;const lv=legOk(c.venta)?sacos60ToLotes(c.venta.sacos60):null;if(lc!==null&&lv!==null)return Math.min(lc,lv);return lc??lv??0;}
-function resultadoDe(c){if(coberturaEstado(c)!=='CERRADA')return null;return (c.venta.precio-c.compra.precio)*lotesDe(c)*KC_CONTRACT_LB;}
+// Realizado: ambas patas cerradas
+function resultadoRealizado(c){if(coberturaEstado(c)!=='CERRADA')return null;return (c.venta.precio-c.compra.precio)*lotesDe(c)*KC_CONTRACT_LB;}
+// Valorado: pata abierta valorada contra el precio de cierre de la posicion (mark-to-market fin de mes)
+function resultadoValorado(c,cierre){if(coberturaEstado(c)==='CERRADA'||cierre==null)return null;
+  if(legOk(c.compra)&&!legOk(c.venta))return (cierre-c.compra.precio)*sacos60ToLotes(c.compra.sacos60)*KC_CONTRACT_LB;
+  if(legOk(c.venta)&&!legOk(c.compra))return (c.venta.precio-cierre)*sacos60ToLotes(c.venta.sacos60)*KC_CONTRACT_LB;
+  return null;}
+function resultadoMostrado(c,db){const est=coberturaEstado(c);if(est==='CERRADA')return resultadoRealizado(c);return resultadoValorado(c,(db.cierres||{})[posKey(c)]);}
 
 /* ============ STORE ============ */
-const KEY='eq_cob_v2', EMPTY={coberturas:[],fx:[]};
+const KEY='eq_cob_v3', EMPTY={coberturas:[],fx:[],cierres:{}};
 function seed(){
-  const cob=o=>Object.assign({id:uid(),incoterm:'FOB',producto:'',cliente:'',pedido:'',posicion:'Septiembre',fnd:'',compra:null,venta:null},o);
+  const cob=o=>Object.assign({id:uid(),incoterm:'FOB',proveedor:'',producto:'',loteOIC:'',cliente:'',pedido:'',mes:'Septiembre',anio:2026,fnd:'',compra:null,venta:null},o);
   const leg=(codigoHP,fecha,sacos60,precio)=>({codigoHP,fecha,sacos60,precio});
   return {coberturas:[
-    cob({cliente:'Katz (Serengueti)',pedido:'S00443',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1506855','2026-07-22',70,3.1810),venta:leg('1504300','2026-07-21',70,3.2790)}),
-    cob({cliente:'TAF',pedido:'S00329',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1519396','2026-07-29',140,3.2975),venta:leg('1516379','2026-07-28',140,3.4590)}),
-    cob({cliente:'TAF',pedido:'S00345',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1237914','2026-07-15',333,3.2835),venta:leg('1533840','2026-08-07',333,3.3500)}),
-    cob({cliente:'SPOT USA',pedido:'',posicion:'Diciembre',fnd:'2026-11-20',compra:leg('1509836','2026-07-23',70,2.9610),venta:leg('1534536','2026-08-07',70,3.1890)}),
-    cob({cliente:'Royal Coffee Inc',pedido:'S00454',posicion:'Diciembre',fnd:'2026-11-20',compra:leg('1524797','2026-08-03',175,3.1010),venta:null}),
-    cob({cliente:'Katz (Serengueti)',pedido:'S00443',posicion:'Septiembre',fnd:'2026-08-20',compra:leg('1533999','2026-08-07',283,3.3000),venta:leg('1533745','2026-08-07',283,3.3095)}),
+    cob({cliente:'Katz (Serengueti)',pedido:'S00443',loteOIC:'3-0659-00157',fnd:'2026-08-20',compra:leg('1506855','2026-07-22',70,3.181),venta:leg('1504300','2026-07-21',70,3.279)}),
+    cob({cliente:'Katz (Serengueti)',pedido:'S00443',loteOIC:'3-0659-00157',fnd:'2026-08-20',compra:leg('1506862','2026-07-22',70,3.151),venta:leg('1513442','2026-07-27',70,3.281)}),
+    cob({cliente:'Katz (Serengueti)',pedido:'S00443',loteOIC:'3-0659-00157',fnd:'2026-08-20',compra:leg('1519510','2026-07-29',140,3.247),venta:leg('1513638','2026-07-27',140,3.299)}),
+    cob({cliente:'TAF',pedido:'S00329',loteOIC:'3-0659-00155',fnd:'2026-08-20',compra:leg('1519396','2026-07-29',140,3.2975),venta:leg('1516379','2026-07-28',140,3.459)}),
+    cob({cliente:'TAF',pedido:'S00345',loteOIC:'3-0659-00118',fnd:'2026-08-20',compra:leg('1237914','2026-06-15',333,3.2835),venta:null}), // ABIERTA -> valorar al cierre Sep
+    cob({cliente:'Royal Coffee Inc',pedido:'S00454',loteOIC:'3-0659-00161',mes:'Diciembre',fnd:'2026-11-20',compra:leg('1524797','2026-08-03',175,3.101),venta:null}),
   ],fx:[
-    {id:uid(),par:'USDCOP',tipo:'FORWARD',lado:'VENTA',nocional:200000,tasa:4050,fecha:'2026-07-02',vencimiento:'2026-09-15',pedido:'S00443',notas:'Cobertura ingreso USD venta Katz'},
-  ]};
+    {id:uid(),par:'USDCOP',tipo:'FORWARD',lado:'VENTA',nocional:200000,tasa:4050,fecha:'2026-07-02',vencimiento:'2026-09-15',pedido:'S00443',notas:'Ingreso USD venta Katz'},
+  ],cierres:{'Septiembre 2026':3.321}};
 }
 function loadDb(){const raw=localStorage.getItem(KEY);if(!raw){const s=seed();localStorage.setItem(KEY,JSON.stringify(s));return s;}try{return{...structuredClone(EMPTY),...JSON.parse(raw)};}catch{return structuredClone(EMPTY);}}
 function saveDb(db){localStorage.setItem(KEY,JSON.stringify(db));}
@@ -217,31 +185,23 @@ const go=p=>{location.hash='#'+p;};
 const val=(f,n)=>{const el=f.elements[n];return el?el.value:'';};
 const numOrNull=v=>(v===''||v===null||v===undefined)?null:Number(v);
 const strOrNull=v=>(v===''||v===null||v===undefined)?null:v;
-const nemo=pos=>NEMO[pos]?`KC${NEMO[pos]}`:'';
+const usd=n=>(n>=0?'$':'-$')+money(Math.abs(n));
 
 /* ============ SVG CHARTS ============ */
-function hbars(data,{w=520,barH=24,gap=13,labelW=140}={}){
-  if(!data.length) return `<div class="empty" style="padding:24px">Sin datos para graficar.</div>`;
-  const max=Math.max(1,...data.map(d=>Math.abs(d.value)));
-  const chartW=w-labelW-70, pad=6;
-  const h=pad*2+data.length*(barH+gap)-gap;
+function hbars(data,{w=520,barH=24,gap=13,labelW=150}={}){
+  if(!data.length)return `<div class="empty" style="padding:24px">Sin datos para graficar.</div>`;
+  const max=Math.max(1,...data.map(d=>Math.abs(d.value))),chartW=w-labelW-70,pad=6,h=pad*2+data.length*(barH+gap)-gap;
   let y=pad,out='';
-  for(const d of data){
-    const len=Math.max(2,Math.abs(d.value)/max*chartW);
-    const color=d.value>=0?'var(--teal)':'var(--brick)';
-    out+=`<text x="0" y="${y+barH*0.7}" class="cl-lbl">${esc(trunc(d.label,20))}</text>`;
+  for(const d of data){const len=Math.max(2,Math.abs(d.value)/max*chartW),color=d.value>=0?'var(--teal)':'var(--brick)';
+    out+=`<text x="0" y="${y+barH*0.7}" class="cl-lbl">${esc(trunc(d.label,22))}</text>`;
     out+=`<rect x="${labelW}" y="${y}" width="${len}" height="${barH}" rx="5" fill="${color}"><animate attributeName="width" from="0" to="${len}" dur="0.7s" fill="freeze"/></rect>`;
-    out+=`<text x="${labelW+len+8}" y="${y+barH*0.7}" class="cl-val">${money0(d.value)}</text>`;
-    y+=barH+gap;
-  }
+    out+=`<text x="${labelW+len+8}" y="${y+barH*0.7}" class="cl-val">${money0(d.value)}</text>`;y+=barH+gap;}
   return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${out}</svg>`;
 }
 function donut(segments,{size=180,thick=30,centerTop='',centerBot=''}={}){
-  const total=segments.reduce((a,s)=>a+s.value,0);
-  const r=(size-thick)/2,cx=size/2,cy=size/2,C=2*Math.PI*r;
-  let off=0,arcs='';
-  if(total<=0){arcs=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line-2)" stroke-width="${thick}"/>`;}
-  else for(const s of segments){const len=(s.value/total)*C;arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${thick}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})" stroke-linecap="butt"/>`;off+=len;}
+  const total=segments.reduce((a,s)=>a+s.value,0),r=(size-thick)/2,cx=size/2,cy=size/2,C=2*Math.PI*r;let off=0,arcs='';
+  if(total<=0)arcs=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line-2)" stroke-width="${thick}"/>`;
+  else for(const s of segments){const len=(s.value/total)*C;arcs+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${thick}" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${cx} ${cy})"/>`;off+=len;}
   return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img">${arcs}
     <text x="${cx}" y="${cy-3}" text-anchor="middle" class="donut-c" style="font-size:26px;font-weight:700;fill:var(--ink-2)">${centerTop}</text>
     <text x="${cx}" y="${cy+16}" text-anchor="middle" style="font:700 10px var(--sans);fill:var(--gray);letter-spacing:.1em">${centerBot}</text></svg>`;
@@ -257,106 +217,153 @@ function render(){
   if(view==='nueva')return renderForm(app,null);
   if(view==='editar'&&id)return renderForm(app,id);
   if(view==='cobertura'&&id)return renderDetalle(app,id);
+  if(view==='cierre')return renderCierre(app);
   if(view==='fx')return renderFx(app);
   return renderLibro(app);
 }
+function header(kicker,title,desc,actions){
+  return `<div class="phead"><div><div class="kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><div class="desc">${esc(desc)}</div></div>
+    ${actions?`<div class="actions">${actions}</div>`:''}</div>`;
+}
 
 /* ============ DASHBOARD / LIBRO ============ */
+function sortRows(rows,db){
+  const key=window.__sortKey||'posicion', dir=window.__sortDir||1;
+  const acc={cliente:c=>c.cliente||'',pedido:c=>c.pedido||'',oic:c=>c.loteOIC||'',
+    posicion:c=>c.anio*10+(MES_IDX[c.mes]??0),fnd:c=>c.fnd||'',
+    resultado:c=>{const r=resultadoMostrado(c,db);return r==null?-1e15:r;}};
+  const f=acc[key]||acc.posicion;
+  return rows.slice().sort((a,b)=>{const va=f(a),vb=f(b);return (va<vb?-1:va>vb?1:0)*dir;});
+}
+function sortHead(key,label,cls=''){
+  const active=(window.__sortKey||'posicion')===key, dir=window.__sortDir||1;
+  return `<th class="th-sort ${cls}" onclick="setSort('${key}')">${label}${active?` <span class="arw">${dir>0?'▲':'▼'}</span>`:''}</th>`;
+}
+function setSort(key){if((window.__sortKey||'posicion')===key)window.__sortDir=-(window.__sortDir||1);else{window.__sortKey=key;window.__sortDir=1;}render();}
+
 function renderLibro(app){
   const db=loadDb();
-  const fCli=window.__fCli||'TODOS',fPos=window.__fPos||'TODOS',fEst=window.__fEst||'TODOS';
+  const fCli=window.__fCli||'TODOS',fPos=window.__fPos||'TODOS',fEst=window.__fEst||'TODOS',grp=window.__grp||'cliente';
   const clientes=[...new Set(db.coberturas.map(c=>c.cliente).filter(Boolean))].sort();
-  const filtered=db.coberturas.filter(c=>(fCli==='TODOS'||c.cliente===fCli)&&(fPos==='TODOS'||c.posicion===fPos)&&(fEst==='TODOS'||coberturaEstado(c)===fEst));
+  const posiciones=[...new Set(db.coberturas.map(posKey))];
+  let filtered=db.coberturas.filter(c=>(fCli==='TODOS'||c.cliente===fCli)&&(fPos==='TODOS'||posKey(c)===fPos)&&(fEst==='TODOS'||coberturaEstado(c)===fEst));
+  filtered=sortRows(filtered,db);
 
   const cerradas=db.coberturas.filter(c=>coberturaEstado(c)==='CERRADA');
   const abiertas=db.coberturas.filter(c=>coberturaEstado(c)==='ABIERTA');
-  const totalRes=cerradas.reduce((a,c)=>a+resultadoDe(c),0);
-  const lotesCerr=cerradas.reduce((a,c)=>a+lotesDe(c),0);
-  const ganan=cerradas.filter(c=>resultadoDe(c)>=0).length;
+  const resReal=cerradas.reduce((a,c)=>a+resultadoRealizado(c),0);
+  const resVal=abiertas.reduce((a,c)=>{const v=resultadoValorado(c,(db.cierres||{})[posKey(c)]);return a+(v||0);},0);
+  const sinCierre=abiertas.filter(c=>(db.cierres||{})[posKey(c)]==null).length;
 
-  // chart: resultado por cliente (cerradas)
-  const porCli={};
-  cerradas.forEach(c=>{porCli[c.cliente]=(porCli[c.cliente]||0)+resultadoDe(c);});
-  const cliData=Object.entries(porCli).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
+  if(db.coberturas.length===0){app.innerHTML=header('Dashboard','Libro de coberturas','Cruce compra/venta de futuros y su resultado.',`<button class="btn-primary" onclick="go('/nueva')">+ Nueva cobertura</button>`)+`<div class="empty">No hay coberturas todavía. <span class="link" onclick="go('/nueva')">Crear la primera</span>.</div>`;return;}
 
-  if(db.coberturas.length===0){
-    app.innerHTML=header('Dashboard','Libro de coberturas','Cruce de compra/venta de futuros y su resultado.',true)
-      +`<div class="empty">No hay coberturas todavía. <span class="link" onclick="go('/nueva')">Crear la primera</span>.</div>`;
-    return;
-  }
+  // agrupacion para chart
+  const accG={cliente:c=>c.cliente||'(sin cliente)',pedido:c=>c.pedido||'(sin pedido)',oic:c=>c.loteOIC||'(sin OIC)'}[grp];
+  const porG={};db.coberturas.forEach(c=>{const r=resultadoMostrado(c,db);if(r==null)return;const k=accG(c);porG[k]=(porG[k]||0)+r;});
+  const gData=Object.entries(porG).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value);
+  const grpLbl={cliente:'cliente',pedido:'pedido',oic:'lote OIC'}[grp];
 
   const kpis=`<div class="kpis">
-    <div class="kpi accent"><div class="lbl">Resultado neto</div><div class="big ${totalRes>=0?'pos-usd':'neg-usd'}">$${money0(totalRes)}</div><div class="foot">USD · ${cerradas.length} coberturas cerradas</div></div>
-    <div class="kpi"><div class="lbl">Cerradas</div><div class="big">${cerradas.length}</div><div class="foot">${ganan} con ganancia</div></div>
-    <div class="kpi ${abiertas.length?'warn':''}"><div class="lbl">Abiertas</div><div class="big">${abiertas.length}</div><div class="foot">${abiertas.length?'requieren cruzar pata':'todo neteado'}</div></div>
-    <div class="kpi"><div class="lbl">Lotes cerrados</div><div class="big">${lot(lotesCerr)}</div><div class="foot">${fmt(lotesCerr*KC_CONTRACT_LB)} lb cubiertas</div></div>
+    <div class="kpi accent"><div class="lbl">Resultado realizado</div><div class="big ${resReal>=0?'pos-usd':'neg-usd'}">${usd(resReal)}</div><div class="foot">USD · ${cerradas.length} cerradas</div></div>
+    <div class="kpi val"><div class="lbl">Valorado (abiertas)</div><div class="big ${resVal>=0?'pos-usd':'neg-usd'}">${usd(resVal)}</div><div class="foot">al precio de cierre${sinCierre?` · ${sinCierre} sin cierre` :''}</div></div>
+    <div class="kpi ${abiertas.length?'warn':''}"><div class="lbl">Abiertas</div><div class="big">${abiertas.length}</div><div class="foot">${abiertas.length?'falta cruzar pata':'todo neteado'}</div></div>
+    <div class="kpi"><div class="lbl">Cerradas</div><div class="big">${cerradas.length}</div><div class="foot">${cerradas.filter(c=>resultadoRealizado(c)>=0).length} con ganancia</div></div>
   </div>`;
 
   const charts=`<div class="charts">
-    <div class="card"><div class="card-h"><h3>Resultado por cliente</h3><span class="hint">USD · coberturas cerradas</span></div>
-      <div class="chart-body">${hbars(cliData)}</div></div>
+    <div class="card"><div class="card-h"><h3>Resultado por ${grpLbl}</h3>
+      <select onchange="window.__grp=this.value;render()"><option value="cliente" ${grp==='cliente'?'selected':''}>Por cliente</option><option value="pedido" ${grp==='pedido'?'selected':''}>Por pedido</option><option value="oic" ${grp==='oic'?'selected':''}>Por lote OIC</option></select></div>
+      <div class="chart-body">${hbars(gData)}</div></div>
     <div class="card"><div class="card-h"><h3>Estado de coberturas</h3></div>
       <div class="chart-body" style="display:flex;align-items:center;gap:18px;justify-content:center">
         ${donut([{label:'Cerradas',value:cerradas.length,color:'var(--teal)'},{label:'Abiertas',value:abiertas.length,color:'var(--amber)'}],{centerTop:db.coberturas.length,centerBot:'TOTAL'})}
-        <div style="font-size:13px;line-height:2">
-          <div><span class="sw" style="background:var(--teal)"></span>Cerradas <b>${cerradas.length}</b></div>
-          <div><span class="sw" style="background:var(--amber)"></span>Abiertas <b>${abiertas.length}</b></div>
-        </div>
-      </div></div>
-  </div>`;
+        <div style="font-size:13px;line-height:2"><div><span class="sw" style="background:var(--teal)"></span>Cerradas <b>${cerradas.length}</b></div><div><span class="sw" style="background:var(--amber)"></span>Abiertas <b>${abiertas.length}</b></div></div>
+      </div></div></div>`;
 
   const filters=`<div class="filters">
     <select onchange="window.__fCli=this.value;render()"><option value="TODOS" ${fCli==='TODOS'?'selected':''}>Todos los clientes</option>${clientes.map(c=>`<option ${c===fCli?'selected':''}>${esc(c)}</option>`).join('')}</select>
-    <select onchange="window.__fPos=this.value;render()"><option value="TODOS" ${fPos==='TODOS'?'selected':''}>Toda posición</option>${MESES.map(m=>`<option ${m===fPos?'selected':''}>${m}</option>`).join('')}</select>
+    <select onchange="window.__fPos=this.value;render()"><option value="TODOS" ${fPos==='TODOS'?'selected':''}>Toda posición</option>${posiciones.map(p=>`<option ${p===fPos?'selected':''}>${esc(p)}</option>`).join('')}</select>
     <select onchange="window.__fEst=this.value;render()">${[['TODOS','Todos los estados'],['ABIERTA','Solo abiertas'],['CERRADA','Solo cerradas']].map(([v,l])=>`<option value="${v}" ${v===fEst?'selected':''}>${l}</option>`).join('')}</select>
-    <span class="count">${filtered.length} de ${db.coberturas.length}</span>
-  </div>`;
+    <span class="count">${filtered.length} de ${db.coberturas.length} · clic en encabezados para ordenar</span></div>`;
 
-  const rows=filtered.map(c=>{
-    const est=coberturaEstado(c),res=resultadoDe(c),cO=!legOk(c.compra),vO=!legOk(c.venta);
+  const rows=filtered.map(c=>{const est=coberturaEstado(c),r=resultadoMostrado(c,db),cO=!legOk(c.compra),vO=!legOk(c.venta),val=est==='ABIERTA';
     return `<tr onclick="go('/cobertura/${c.id}')">
       <td><span class="cli">${esc(c.cliente||'—')}</span>${c.pedido?`<div class="ped">${esc(c.pedido)}</div>`:''}</td>
-      <td class="sep ${cO?'open':''}">${esc(c.compra?.codigoHP||'')}</td><td class="${cO?'open':''}">${c.compra?.fecha||''}</td><td class="num ${cO?'open':''}">${c.compra?fmt(c.compra.sacos60):''}</td><td class="num ${cO?'open':''}">${px(c.compra?.precio)}</td>
-      <td class="sep ${vO?'open':''}">${esc(c.venta?.codigoHP||'')}</td><td class="${vO?'open':''}">${c.venta?.fecha||''}</td><td class="num ${vO?'open':''}">${c.venta?fmt(c.venta.sacos60):''}</td><td class="num ${vO?'open':''}">${px(c.venta?.precio)}</td>
-      <td class="sep"><span class="posbadge">${esc(c.posicion)}</span> <span class="nemo">${nemo(c.posicion)}</span></td><td>${c.fnd||''}</td>
-      <td class="num">${res===null?`<span class="pill abierta">abierta</span>`:`<b class="${res>=0?'pos-usd':'neg-usd'}">${money(res)}</b>`}</td>
+      <td class="oic">${esc(c.loteOIC||'—')}</td>
+      <td class="sep ${cO?'open':''}">${esc(c.compra?.codigoHP||'')}</td><td class="num ${cO?'open':''}">${c.compra?fmt(c.compra.sacos60):''}</td><td class="num ${cO?'open':''}">${px(c.compra?.precio)}</td>
+      <td class="sep ${vO?'open':''}">${esc(c.venta?.codigoHP||'')}</td><td class="num ${vO?'open':''}">${c.venta?fmt(c.venta.sacos60):''}</td><td class="num ${vO?'open':''}">${px(c.venta?.precio)}</td>
+      <td class="sep"><span class="posbadge">${esc(c.mes)} ${c.anio}</span> <span class="nemo">${nemo(c)}</span></td>
+      <td class="num">${r==null?`<span class="pill abierta">sin cierre</span>`:`<b class="${r>=0?'pos-usd':'neg-usd'}">${money(r)}</b>${val?' <span class="nemo">val.</span>':''}`}</td>
     </tr>`;}).join('');
 
   const table=`<div class="tablewrap"><div class="tscroll"><table>
     <thead>
-      <tr class="grp"><th></th><th colspan="4" class="sep">Compra · long futuro</th><th colspan="4" class="sep">Venta · short futuro</th><th colspan="3" class="sep"></th></tr>
-      <tr class="col"><th>Cliente / Pedido</th><th class="sep">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Cód. HP</th><th>Fecha</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Posición</th><th>FND</th><th class="num">Resultado USD</th></tr>
+      <tr class="grp"><th colspan="2"></th><th colspan="3" class="sep">Compra · long</th><th colspan="3" class="sep">Venta · short</th><th colspan="2" class="sep"></th></tr>
+      <tr class="col">${sortHead('cliente','Cliente / Pedido')}${sortHead('oic','Lote OIC')}<th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th><th class="sep">Cód. HP</th><th class="num">Sacos60</th><th class="num">Precio</th>${sortHead('posicion','Posición','sep')}${sortHead('resultado','Resultado USD','num')}</tr>
     </thead>
     <tbody>${rows}</tbody>
-    <tfoot><tr><td colspan="11" class="num">Resultado neto (cerradas en el filtro)</td><td class="num"><span class="${totalRes>=0?'pos-usd':'neg-usd'}" style="font-size:15px">$${money(totalRes)}</span></td></tr></tfoot>
+    <tfoot><tr><td colspan="9" class="num">Realizado ${usd(resReal)} · Valorado ${usd(resVal)} · <b>Total</b></td><td class="num"><span class="${(resReal+resVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(resReal+resVal)}</span></td></tr></tfoot>
   </table></div></div>
-  <div class="legend"><span><span class="sw" style="background:rgba(201,138,46,.5)"></span><b>Abierta</b>: falta cruzar una pata</span><span><span class="sw" style="background:rgba(47,107,79,.4)"></span><b>Cerrada</b>: compra y venta neteadas → Resultado</span><span>· clic en una fila para el detalle</span></div>`;
+  <div class="legend"><span><span class="sw" style="background:rgba(201,138,46,.5)"></span><b>Abierta</b>: valorada al cierre (val.)</span><span><span class="sw" style="background:rgba(47,107,79,.4)"></span><b>Cerrada</b>: resultado realizado</span><span>· <span class="link" onclick="go('/cierre')">Cierre de mes</span> para conciliar con Hedge Point</span></div>`;
 
-  app.innerHTML=header('Dashboard','Libro de coberturas','Cruce compra/venta de futuros y su resultado, por cliente y pedido.',true)+kpis+charts+filters+table;
+  app.innerHTML=header('Dashboard','Libro de coberturas','Cruce compra/venta de futuros, por cliente, pedido y lote OIC.',`<button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button><button class="btn-primary" onclick="go('/nueva')">+ Nueva cobertura</button>`)+kpis+charts+filters+table;
 }
 
-function header(kicker,title,desc,withActions){
-  return `<div class="phead"><div><div class="kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><div class="desc">${esc(desc)}</div></div>
-    ${withActions?`<div class="actions"><button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button><button class="btn-primary" onclick="go('/nueva')">+ Nueva cobertura</button></div>`:''}</div>`;
+/* ============ CIERRE DE MES / CONCILIACIÓN ============ */
+function renderCierre(app){
+  const db=loadDb();db.cierres=db.cierres||{};
+  const posiciones=[...new Set(db.coberturas.map(posKey))].sort((a,b)=>{const[ma,ya]=a.split(' '),[mb,yb]=b.split(' ');return (Number(ya)*10+MES_IDX[ma])-(Number(yb)*10+MES_IDX[mb]);});
+  let gReal=0,gVal=0;
+  const rows=posiciones.map(pk=>{
+    const [mes,anio]=pk.split(' ');const grupo=db.coberturas.filter(c=>posKey(c)===pk);
+    const cer=grupo.filter(c=>coberturaEstado(c)==='CERRADA'),abi=grupo.filter(c=>coberturaEstado(c)==='ABIERTA');
+    const cierre=db.cierres[pk];
+    const rReal=cer.reduce((a,c)=>a+resultadoRealizado(c),0);
+    const rVal=abi.reduce((a,c)=>{const v=resultadoValorado(c,cierre);return a+(v||0);},0);
+    gReal+=rReal;gVal+=rVal;
+    const nk=NEMO[mes]?`KC${NEMO[mes]}${String(anio).slice(-1)}`:'';
+    return `<tr style="cursor:default">
+      <td><span class="posbadge">${esc(mes)} ${anio}</span> <span class="nemo">${nk}</span></td>
+      <td class="num">${cer.length}</td><td class="num"><b class="${rReal>=0?'pos-usd':'neg-usd'}">${money(rReal)}</b></td>
+      <td class="num">${abi.length}</td>
+      <td class="num"><input type="number" step="any" value="${cierre??''}" placeholder="cierre USD/lb" style="width:120px;text-align:right" onchange="setCierre('${esc(pk)}',this.value)"></td>
+      <td class="num">${abi.length===0?'<span class="nemo">—</span>':(cierre==null?`<span class="pill abierta">falta cierre</span>`:`<b class="${rVal>=0?'pos-usd':'neg-usd'}">${money(rVal)}</b>`)}</td>
+      <td class="num"><b class="${(rReal+rVal)>=0?'pos-usd':'neg-usd'}">${money(rReal+rVal)}</b></td>
+    </tr>`;}).join('');
+
+  app.innerHTML=header('Conciliación','Cierre de mes','Valora las posiciones abiertas al precio de cierre y concilia el total por posición contra el extracto de Hedge Point.',`<button class="btn-ghost" onclick="exportCsv()">⬇ Exportar CSV</button>`)
+    +`<div class="card" style="padding:0;overflow:hidden">
+      <div class="tscroll"><table>
+        <thead><tr class="col"><th>Posición</th><th class="num">Cerradas</th><th class="num">Resultado realizado</th><th class="num">Abiertas</th><th class="num">Precio cierre (USD/lb)</th><th class="num">Resultado valorado</th><th class="num">Total posición</th></tr></thead>
+        <tbody>${rows||`<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray)">Sin posiciones.</td></tr>`}</tbody>
+        <tfoot><tr><td>TOTAL</td><td></td><td class="num"><b class="${gReal>=0?'pos-usd':'neg-usd'}">${money(gReal)}</b></td><td></td><td></td><td class="num"><b class="${gVal>=0?'pos-usd':'neg-usd'}">${money(gVal)}</b></td><td class="num"><b class="${(gReal+gVal)>=0?'pos-usd':'neg-usd'}" style="font-size:15px">${usd(gReal+gVal)}</b></td></tr></tfoot>
+      </table></div></div>
+      <div class="legend"><span>El <b>precio de cierre</b> es el settlement del futuro al último día del mes. <b>Realizado</b> (posiciones cerradas) se contabiliza; <b>Valorado</b> (abiertas al cierre) concilia contra el extracto Hedge Point.</span></div>`;
 }
+function setCierre(pk,v){const db=loadDb();db.cierres=db.cierres||{};if(v===''||v==null)delete db.cierres[pk];else db.cierres[pk]=Number(v);saveDb(db);render();}
 
 /* ============ FORM ============ */
 function renderForm(app,id){
   const db=loadDb();const c=id?db.coberturas.find(x=>x.id===id):null;
   const clientes=[...new Set(db.coberturas.map(x=>x.cliente).filter(Boolean))].sort();
+  const oics=[...new Set(db.coberturas.map(x=>x.loteOIC).filter(Boolean))].sort();
   const g=(path,d='')=>{if(!c)return d;const ps=path.split('.');let v=c;for(const p of ps)v=v?.[p];return(v===null||v===undefined)?d:v;};
   const openC=c&&!legOk(c.compra),openV=c&&!legOk(c.venta);
-  app.innerHTML=header('Captura',id?'Editar cobertura':'Nueva cobertura','Registra las patas de compra y venta del futuro.',false)
+  app.innerHTML=header('Captura',id?'Editar cobertura':'Nueva cobertura','Registra las patas de compra y venta del futuro.','')
     +`<div class="backlink" onclick="go('/libro')">← Volver al libro</div>
-    <form id="cf" onsubmit="return submitCobertura(event,${id?`'${id}'`:'null'})" style="margin-top:14px;max-width:860px">
+    <form id="cf" onsubmit="return submitCobertura(event,${id?`'${id}'`:'null'})" style="margin-top:14px;max-width:880px">
       <fieldset><legend>Operación comercial</legend>
         <div class="grid3">
           <label class="field">Cliente<input name="cliente" required list="cli" value="${esc(g('cliente'))}" placeholder="Katz (Serengueti)"></label>
           <datalist id="cli">${clientes.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
           <label class="field">Pedido<input name="pedido" value="${esc(g('pedido'))}" placeholder="S00443"></label>
-          <label class="field">Producto (opcional)<input name="producto" value="${esc(g('producto'))}"></label>
+          <label class="field">Lote OIC<input name="loteOIC" list="oics" value="${esc(g('loteOIC'))}" placeholder="3-0659-00157"></label>
+          <datalist id="oics">${oics.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>
+          <label class="field">Proveedor<input name="proveedor" value="${esc(g('proveedor'))}" placeholder="opcional"></label>
           <label class="field">Incoterm<input name="incoterm" value="${esc(g('incoterm','FOB'))}"></label>
-          <label class="field">Posición (mes)<select name="posicion">${MESES.map(m=>`<option ${m===g('posicion','Septiembre')?'selected':''}>${m}</option>`).join('')}</select></label>
+          <label class="field">Producto<input name="producto" value="${esc(g('producto'))}" placeholder="opcional"></label>
+          <label class="field">Posición · Mes<select name="mes">${MESES.map(m=>`<option ${m===g('mes','Septiembre')?'selected':''}>${m}</option>`).join('')}</select></label>
+          <label class="field">Posición · Año<select name="anio">${ANIOS.map(a=>`<option ${a===g('anio',2026)?'selected':''}>${a}</option>`).join('')}</select></label>
           <label class="field">FND (First Notice Day)<input name="fnd" type="date" value="${esc(g('fnd'))}"></label>
         </div>
       </fieldset>
@@ -367,8 +374,7 @@ function renderForm(app,id){
             <label class="field">Fecha<input name="compra_fecha" type="date" value="${esc(g('compra.fecha'))}"></label>
             <label class="field">Cantidad (sacos 60 kg)<input name="compra_sacos60" type="number" step="any" value="${esc(g('compra.sacos60'))}"></label>
             <label class="field">Precio (USD/lb)<input name="compra_precio" type="number" step="any" value="${esc(g('compra.precio'))}"></label>
-          </div>
-          <div style="font-size:12px;color:var(--gray);margin-top:9px">Se compra al vender al cliente. Vacío = pata abierta.</div>
+          </div><div style="font-size:12px;color:var(--gray);margin-top:9px">Vacío = pata abierta (se valora al cierre).</div>
         </fieldset>
         <fieldset class="${openV?'open-leg':''}"><legend>Venta — short futuro</legend>
           <div style="display:flex;flex-direction:column;gap:11px">
@@ -376,8 +382,7 @@ function renderForm(app,id){
             <label class="field">Fecha<input name="venta_fecha" type="date" value="${esc(g('venta.fecha'))}"></label>
             <label class="field">Cantidad (sacos 60 kg)<input name="venta_sacos60" type="number" step="any" value="${esc(g('venta.sacos60'))}"></label>
             <label class="field">Precio (USD/lb)<input name="venta_precio" type="number" step="any" value="${esc(g('venta.precio'))}"></label>
-          </div>
-          <div style="font-size:12px;color:var(--gray);margin-top:9px">Se vende al comprar el café y cerrar. Al completar ambas, el Resultado se calcula solo.</div>
+          </div><div style="font-size:12px;color:var(--gray);margin-top:9px">Al completar ambas, el Resultado se calcula solo.</div>
         </fieldset>
       </div>
       <div style="display:flex;gap:10px;margin-top:16px">
@@ -389,7 +394,7 @@ function renderForm(app,id){
 }
 function legFrom(f,pre){const codigoHP=strOrNull(val(f,pre+'_codigoHP')),fecha=strOrNull(val(f,pre+'_fecha')),sacos60=numOrNull(val(f,pre+'_sacos60')),precio=numOrNull(val(f,pre+'_precio'));if(codigoHP===null&&fecha===null&&sacos60===null&&precio===null)return null;return{codigoHP,fecha,sacos60,precio};}
 function submitCobertura(e,id){e.preventDefault();const f=e.target,db=loadDb();
-  const data={cliente:val(f,'cliente'),pedido:strOrNull(val(f,'pedido')),producto:strOrNull(val(f,'producto')),incoterm:val(f,'incoterm')||'FOB',posicion:val(f,'posicion'),fnd:strOrNull(val(f,'fnd')),compra:legFrom(f,'compra'),venta:legFrom(f,'venta')};
+  const data={cliente:val(f,'cliente'),pedido:strOrNull(val(f,'pedido')),loteOIC:strOrNull(val(f,'loteOIC')),proveedor:strOrNull(val(f,'proveedor')),producto:strOrNull(val(f,'producto')),incoterm:val(f,'incoterm')||'FOB',mes:val(f,'mes'),anio:Number(val(f,'anio')),fnd:strOrNull(val(f,'fnd')),compra:legFrom(f,'compra'),venta:legFrom(f,'venta')};
   if(id){const i=db.coberturas.findIndex(x=>x.id===id);db.coberturas[i]={...db.coberturas[i],...data};}else{db.coberturas.push({id:uid(),...data});}
   saveDb(db);go('/libro');return false;}
 function borrarCobertura(id){if(!confirm('¿Borrar esta cobertura?'))return;const db=loadDb();db.coberturas=db.coberturas.filter(x=>x.id!==id);saveDb(db);go('/libro');}
@@ -398,25 +403,25 @@ function borrarCobertura(id){if(!confirm('¿Borrar esta cobertura?'))return;cons
 function renderDetalle(app,id){
   const db=loadDb(),c=db.coberturas.find(x=>x.id===id);
   if(!c){app.innerHTML=`<div class="empty">No encontrada. <span class="link" onclick="go('/libro')">Volver</span></div>`;return;}
-  const est=coberturaEstado(c),res=resultadoDe(c),lotes=lotesDe(c);
+  const est=coberturaEstado(c),cierre=(db.cierres||{})[posKey(c)],rReal=resultadoRealizado(c),rVal=resultadoValorado(c,cierre),lotes=lotesDe(c);
   const legCard=(title,leg,sub)=>{const open=!legOk(leg);return `<fieldset class="${open?'open-leg':''}"><legend>${title}${open?' · <span style="color:#9a6a16">ABIERTA</span>':''}</legend>
     <div style="font-size:12px;color:var(--gray);margin-bottom:8px">${sub}</div>
-    ${leg?`<div class="kv">Código HP: <b>${esc(leg.codigoHP||'—')}</b></div><div class="kv">Fecha: <b>${leg.fecha||'—'}</b></div><div class="kv">Cantidad: <b>${leg.sacos60?fmt(leg.sacos60)+' sacos 60kg':'—'}</b> ${leg.sacos60?`<span class="nemo">(${lot(sacos60ToLotes(leg.sacos60))} lotes)</span>`:''}</div><div class="kv">Precio: <b>${leg.precio!=null?px(leg.precio)+' USD/lb':'—'}</b></div>`:`<div class="kv" style="color:var(--gray)">Falta cruzar esta pata.</div>`}
+    ${leg?`<div class="kv">Código HP: <b>${esc(leg.codigoHP||'—')}</b></div><div class="kv">Fecha: <b>${leg.fecha||'—'}</b></div><div class="kv">Cantidad: <b>${leg.sacos60?fmt(leg.sacos60)+' sacos 60kg':'—'}</b> ${leg.sacos60?`<span class="nemo">(${lot(sacos60ToLotes(leg.sacos60))} lotes)</span>`:''}</div><div class="kv">Precio: <b>${leg.precio!=null?px(leg.precio)+' USD/lb':'—'}</b></div>`:`<div class="kv" style="color:var(--gray)">Falta cruzar esta pata — se valora al precio de cierre.</div>`}
     </fieldset>`;};
-  app.innerHTML=header('Detalle',c.cliente||'—',c.pedido?'Pedido '+c.pedido:'Cobertura de futuros',false)
+  const resBox=est==='CERRADA'
+    ?`<div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Resultado realizado</div><div class="bignum ${rReal>=0?'pos-usd':'neg-usd'}" style="margin-top:8px">${usd(rReal)}</div><div class="kv" style="margin-top:8px;color:var(--gray)">(venta ${px(c.venta.precio)} − compra ${px(c.compra.precio)}) × ${lot(lotes)} lotes × 37.500 lb</div>`
+    :`<div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Resultado valorado (al cierre)</div><div class="bignum ${rVal==null?'':(rVal>=0?'pos-usd':'neg-usd')}" style="margin-top:8px">${rVal==null?'—':usd(rVal)}</div><div class="kv" style="margin-top:8px;color:var(--gray)">${cierre==null?`Falta el precio de cierre de ${esc(posKey(c))}. <span class="link" onclick="go('/cierre')">Definir en Cierre de mes</span>`:`vs cierre ${px(cierre)} USD/lb · <span class="link" onclick="go('/cierre')">Cierre de mes</span>`}</div>`;
+  app.innerHTML=header('Detalle',c.cliente||'—',c.pedido?'Pedido '+c.pedido:'Cobertura de futuros','')
     +`<div class="backlink" onclick="go('/libro')">← Volver al libro</div>
     <div class="detail-grid" style="margin-top:14px">
       <div class="card pad">
         <div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Posición</div>
-        <div style="font-family:var(--serif);font-size:30px;font-weight:700;margin-top:6px">${esc(c.posicion)} <span class="nemo" style="font-size:15px">${nemo(c.posicion)}</span></div>
-        <div class="kv" style="margin-top:10px">FND: <b>${c.fnd||'—'}</b> · Incoterm: <b>${esc(c.incoterm||'')}</b> ${c.producto?'· '+esc(c.producto):''}</div>
+        <div style="font-family:var(--serif);font-size:30px;font-weight:700;margin-top:6px">${esc(c.mes)} ${c.anio} <span class="nemo" style="font-size:15px">${nemo(c)}</span></div>
+        <div class="kv" style="margin-top:10px">Lote OIC: <b>${esc(c.loteOIC||'—')}</b> · FND: <b>${c.fnd||'—'}</b></div>
+        <div class="kv">Incoterm: <b>${esc(c.incoterm||'')}</b> ${c.proveedor?'· Prov: '+esc(c.proveedor):''} ${c.producto?'· '+esc(c.producto):''}</div>
         <div style="margin-top:12px"><span class="pill ${est==='CERRADA'?'cerrada':'abierta'}">${est}</span></div>
       </div>
-      <div class="card pad" style="border-color:${res===null?'var(--line)':(res>=0?'#bcd8c9':'#e7c3b4')}">
-        <div class="lbl" style="font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);font-weight:700">Resultado de la cobertura</div>
-        <div class="bignum ${res===null?'':(res>=0?'pos-usd':'neg-usd')}" style="margin-top:8px">${res===null?'—':'$'+money(res)}</div>
-        <div class="kv" style="margin-top:8px;color:var(--gray)">${res===null?'Se calcula al cerrar ambas patas.':`(venta ${px(c.venta.precio)} − compra ${px(c.compra.precio)}) × ${lot(lotes)} lotes × 37.500 lb`}</div>
-      </div>
+      <div class="card pad" style="border-color:${(est==='CERRADA'?rReal:rVal)==null?'var(--line)':((est==='CERRADA'?rReal:rVal)>=0?'#bcd8c9':'#e7c3b4')}">${resBox}</div>
     </div>
     <div class="grid2" style="margin-top:14px">
       ${legCard('Compra — long futuro',c.compra,'Cuando vendemos al cliente, compramos el futuro.')}
@@ -431,36 +436,35 @@ function renderDetalle(app,id){
 /* ============ FX ============ */
 function renderFx(app){
   const db=loadDb();
-  app.innerHTML=header('Divisas','Coberturas FX','Cobertura de tasa de cambio (COP/USD, EUR/USD) del flujo de cada pedido.',false)
+  app.innerHTML=header('Divisas','Coberturas FX','Cobertura de tasa de cambio (COP/USD, EUR/USD) del flujo de cada pedido.','')
     +`<form id="fxf" class="filters" style="gap:9px" onsubmit="return submitFx(event)">
       <select name="par"><option>USDCOP</option><option>EURUSD</option></select>
       <select name="tipo"><option>FORWARD</option><option>OPCION</option></select>
       <select name="lado"><option value="VENTA">Vendo divisa</option><option value="COMPRA">Compro divisa</option></select>
       <input name="nocional" type="number" step="any" required placeholder="nocional" style="width:120px">
       <input name="tasa" type="number" step="any" required placeholder="tasa" style="width:100px">
-      <input name="fecha" type="date" required>
-      <input name="vencimiento" type="date">
-      <input name="pedido" placeholder="pedido" style="width:90px">
-      <input name="notas" placeholder="notas" style="width:170px">
-      <button class="btn-primary btn-sm">+ Agregar FX</button>
+      <input name="fecha" type="date" required><input name="vencimiento" type="date">
+      <input name="pedido" placeholder="pedido" style="width:90px"><input name="loteOIC" placeholder="lote OIC" style="width:120px">
+      <input name="notas" placeholder="notas" style="width:150px"><button class="btn-primary btn-sm">+ Agregar FX</button>
     </form>
     <div class="tablewrap"><div class="tscroll"><table>
-      <thead><tr class="col"><th>Par</th><th>Tipo</th><th>Lado</th><th class="num">Nocional</th><th class="num">Tasa</th><th>Fecha</th><th>Vcto</th><th>Pedido</th><th>Notas</th><th></th></tr></thead>
-      <tbody>${db.fx.length===0?`<tr><td colspan="10" style="text-align:center;padding:26px;color:var(--gray)">Sin coberturas FX. Agrega la primera arriba.</td></tr>`:
-        db.fx.map(x=>`<tr style="cursor:default"><td><b>${x.par}</b></td><td>${x.tipo}</td><td>${x.lado==='VENTA'?'Vende':'Compra'}</td><td class="num">${fmt(x.nocional)}</td><td class="num">${px(x.tasa)}</td><td>${x.fecha||''}</td><td>${x.vencimiento||''}</td><td>${esc(x.pedido||'')}</td><td>${esc(x.notas||'')}</td><td><span class="link" onclick="borrarFx('${x.id}')">borrar</span></td></tr>`).join('')}</tbody>
+      <thead><tr class="col"><th>Par</th><th>Tipo</th><th>Lado</th><th class="num">Nocional</th><th class="num">Tasa</th><th>Fecha</th><th>Vcto</th><th>Pedido</th><th>Lote OIC</th><th>Notas</th><th></th></tr></thead>
+      <tbody>${db.fx.length===0?`<tr><td colspan="11" style="text-align:center;padding:26px;color:var(--gray)">Sin coberturas FX. Agrega la primera arriba.</td></tr>`:
+        db.fx.map(x=>`<tr style="cursor:default"><td><b>${x.par}</b></td><td>${x.tipo}</td><td>${x.lado==='VENTA'?'Vende':'Compra'}</td><td class="num">${fmt(x.nocional)}</td><td class="num">${px(x.tasa)}</td><td>${x.fecha||''}</td><td>${x.vencimiento||''}</td><td>${esc(x.pedido||'')}</td><td class="oic">${esc(x.loteOIC||'')}</td><td>${esc(x.notas||'')}</td><td><span class="link" onclick="borrarFx('${x.id}')">borrar</span></td></tr>`).join('')}</tbody>
     </table></div></div>
     <div class="legend"><span>El resultado marcado a mercado (mark-to-market) llega con el feed de precios en la siguiente fase.</span></div>`;
 }
-function submitFx(e){e.preventDefault();const f=e.target,db=loadDb();db.fx.push({id:uid(),par:val(f,'par'),tipo:val(f,'tipo'),lado:val(f,'lado'),nocional:Number(val(f,'nocional')),tasa:Number(val(f,'tasa')),fecha:val(f,'fecha'),vencimiento:strOrNull(val(f,'vencimiento')),pedido:strOrNull(val(f,'pedido')),notas:strOrNull(val(f,'notas'))});saveDb(db);render();return false;}
+function submitFx(e){e.preventDefault();const f=e.target,db=loadDb();db.fx.push({id:uid(),par:val(f,'par'),tipo:val(f,'tipo'),lado:val(f,'lado'),nocional:Number(val(f,'nocional')),tasa:Number(val(f,'tasa')),fecha:val(f,'fecha'),vencimiento:strOrNull(val(f,'vencimiento')),pedido:strOrNull(val(f,'pedido')),loteOIC:strOrNull(val(f,'loteOIC')),notas:strOrNull(val(f,'notas'))});saveDb(db);render();return false;}
 function borrarFx(id){if(!confirm('¿Borrar esta cobertura FX?'))return;const db=loadDb();db.fx=db.fx.filter(x=>x.id!==id);saveDb(db);render();}
 
 /* ============ EXPORT CSV ============ */
 function exportCsv(){
   const db=loadDb();
-  const H=['Cliente','Pedido','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Posicion','Nemotecnico','FND','Estado','Resultado_USD'];
+  const H=['Incoterm','Cliente','Pedido','Lote OIC','Proveedor','Compra_CodHP','Compra_Fecha','Compra_Sacos60','Compra_Lotes','Compra_Precio','Venta_CodHP','Venta_Fecha','Venta_Sacos60','Venta_Lotes','Venta_Precio','Mes','Anio','Nemotecnico','FND','Estado','Cierre_posicion','Resultado_realizado_USD','Resultado_valorado_USD'];
   const e=v=>{const s=String(v??'');return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;};
   const L=[H.join(',')];
-  for(const c of db.coberturas){const res=resultadoDe(c);L.push([c.cliente,c.pedido,c.compra?.codigoHP,c.compra?.fecha,c.compra?.sacos60,c.compra&&legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'',c.compra?.precio,c.venta?.codigoHP,c.venta?.fecha,c.venta?.sacos60,c.venta&&legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'',c.venta?.precio,c.posicion,nemo(c.posicion),c.fnd,coberturaEstado(c),res===null?'':res.toFixed(2)].map(e).join(','));}
+  for(const c of db.coberturas){const cierre=(db.cierres||{})[posKey(c)],rr=resultadoRealizado(c),rv=resultadoValorado(c,cierre);
+    L.push([c.incoterm,c.cliente,c.pedido,c.loteOIC,c.proveedor,c.compra?.codigoHP,c.compra?.fecha,c.compra?.sacos60,c.compra&&legOk(c.compra)?sacos60ToLotes(c.compra.sacos60).toFixed(4):'',c.compra?.precio,c.venta?.codigoHP,c.venta?.fecha,c.venta?.sacos60,c.venta&&legOk(c.venta)?sacos60ToLotes(c.venta.sacos60).toFixed(4):'',c.venta?.precio,c.mes,c.anio,nemo(c),c.fnd,coberturaEstado(c),cierre??'',rr==null?'':rr.toFixed(2),rv==null?'':rv.toFixed(2)].map(e).join(','));}
   const blob=new Blob(['﻿'+L.join('\n')],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='coberturas_equation_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
