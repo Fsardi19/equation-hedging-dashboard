@@ -245,6 +245,17 @@ function donut(segments,{size=180,thick=30,centerTop='',centerBot=''}={}){
     <text x="${cx}" y="${cy+16}" text-anchor="middle" style="font:700 10px var(--sans);fill:var(--gray);letter-spacing:.1em">${centerBot}</text></svg>`;
 }
 
+function divBars(data,{w=560,barH=26,gap=13,labelW=96}={}){
+  if(!data.length)return `<div class="empty" style="padding:24px">Sin exposición abierta.</div>`;
+  const max=Math.max(1,...data.map(d=>Math.abs(d.value))),zoneW=(w-labelW)/2-14,cx=labelW+(w-labelW)/2,pad=8,h=pad*2+data.length*(barH+gap)-gap;
+  let y=pad,out=`<line x1="${cx}" y1="${pad-3}" x2="${cx}" y2="${h-pad+3}" stroke="var(--line-2)" stroke-width="1"/>`;
+  for(const d of data){const len=Math.abs(d.value)/max*zoneW,neg=d.value<0,x=neg?cx-len:cx,color=neg?'var(--brick)':'var(--green)';
+    out+=`<text x="0" y="${y+barH*0.68}" class="cl-lbl">${esc(d.label)}</text>`;
+    out+=`<rect x="${x}" y="${y}" width="${len}" height="${barH}" rx="5" fill="${color}" opacity="0.92"><animate attributeName="width" from="0" to="${len}" dur="0.6s" fill="freeze"/></rect>`;
+    out+=`<text x="${neg?x-7:x+len+7}" y="${y+barH*0.68}" class="cl-val" text-anchor="${neg?'end':'start'}">${usd(d.value)}</text>`;y+=barH+gap;}
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img">${out}</svg>`;
+}
+
 /* ============ ROUTER ============ */
 function render(){
   const app=document.getElementById('app');
@@ -410,46 +421,63 @@ function submitParcial(e,id){
 function renderRiesgo(app){
   const db=loadDb();
   const abiertas=db.coberturas.filter(c=>coberturaEstado(c)==='ABIERTA');
-  let totLb=0,totLotes=0,totNot=0;
+  let totLb=0,totLotes=0,totNot=0,netDirLb=0;
   const pos=abiertas.map(c=>{const leg=legOk(c.compra)?c.compra:(legOk(c.venta)?c.venta:null);if(!leg)return null;
-    const dir=legOk(c.compra)?1:-1; // compra abierta = long futuro
+    const dir=legOk(c.compra)?1:-1; // compra abierta = largo futuro
     const lotes=sacos60ToLotes(leg.sacos60),E=lotes*KC_CONTRACT_LB,Pref=(db.cierres||{})[posKey(c)]??leg.precio;
-    totLb+=E;totLotes+=lotes;totNot+=E*Pref;return{dir,E,Pref};}).filter(Boolean);
+    totLb+=E;totLotes+=lotes;totNot+=E*Pref;netDirLb+=dir*E;return{c,dir,E,Pref,lotes};}).filter(Boolean);
+
+  if(pos.length===0){app.innerHTML=header('Riesgo','Escenarios de volatilidad','Sensibilidad de la exposición abierta a movimientos del KC.','')+`<div class="empty">No hay posiciones abiertas: el libro no tiene exposición direccional al KC en este momento.</div>`;return;}
+
   const SC=[-0.5,-0.25,-0.1,0.1,0.25,0.5];
   const scen=SC.map(s=>{const pnl=pos.reduce((a,p)=>a+p.dir*p.E*p.Pref*s,0);return{s,pnl,margin:pnl<0?-pnl:0};});
   const worst=scen.reduce((w,r)=>r.pnl<w.pnl?r:w,{pnl:Infinity,s:0});
   const margenLote=db.margenLote??null, initMargin=margenLote!=null?totLotes*margenLote:null;
-
-  if(pos.length===0){app.innerHTML=header('Riesgo','Escenarios de volatilidad','Sensibilidad de la exposición abierta a movimientos del KC.','')+`<div class="empty">No hay posiciones abiertas: sin exposición direccional al KC ahora mismo.</div>`;return;}
+  const netSesgo=netDirLb>1?'Largo neto':(netDirLb<-1?'Corto neto':'Neutral');
 
   const kpis=`<div class="kpis">
-    <div class="kpi accent"><div class="lbl">Exposición abierta</div><div class="big">${lot(totLotes)}</div><div class="foot">lotes · ${fmt(totLb)} lb</div></div>
-    <div class="kpi"><div class="lbl">Nocional abierto</div><div class="big">${usd(totNot)}</div><div class="foot">${abiertas.length} posiciones</div></div>
-    <div class="kpi warn"><div class="lbl">Peor caso ±50%</div><div class="big neg-usd">${usd(worst.pnl)}</div><div class="foot">llamado a margen ${usd(worst.margin)} → FCF</div></div>
-    <div class="kpi val"><div class="lbl">Margen inicial</div><div class="big">${initMargin!=null?usd(initMargin):'—'}</div><div class="foot">${margenLote!=null?`$${money0(margenLote)}/lote`:'define $/lote abajo'}</div></div>
+    <div class="kpi accent"><div class="lbl">Exposición abierta</div><div class="big">${lot(totLotes)}</div><div class="foot">lotes · ${fmt(totLb)} lb · ${netSesgo}</div></div>
+    <div class="kpi"><div class="lbl">Nocional abierto</div><div class="big">${usd(totNot)}</div><div class="foot">${abiertas.length} posición(es)</div></div>
+    <div class="kpi warn"><div class="lbl">Peor caso (KC ${(worst.s>0?'+':'')+worst.s*100}%)</div><div class="big neg-usd">${usd(worst.pnl)}</div><div class="foot">llamado a margen potencial</div></div>
+    <div class="kpi val"><div class="lbl">Margen inicial</div><div class="big">${initMargin!=null?usd(initMargin):'—'}</div><div class="foot">${margenLote!=null?'$'+money0(margenLote)+'/lote':'define $/lote abajo'}</div></div>
   </div>`;
 
-  const chart=`<div class="card" style="margin-bottom:18px"><div class="card-h"><h3>P&L de la exposición abierta por escenario</h3><span class="hint">movimiento del KC · USD</span></div>
-    <div class="chart-body">${hbars(scen.map(r=>({label:(r.s>0?'+':'')+(r.s*100)+'%',value:r.pnl})),{labelW:70})}</div></div>`;
+  const banner=`<div class="card" style="border-left:5px solid var(--brick);background:#fdf6f2;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div><div class="lbl" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brick);font-weight:800">Para el flujo de caja</div>
+      <div style="font-size:14px;color:var(--ink-2);margin-top:4px;max-width:640px">Si el KC se mueve <b>${worst.s*100}%</b> en contra, la exposición abierta perdería <b class="neg-usd">${usd(worst.pnl)}</b> — ese es el <b>llamado a margen a provisionar en el FCF mensual</b>.</div></div>
+    <div style="margin-left:auto;text-align:right"><div class="bignum neg-usd">${usd(worst.margin)}</div><div class="muted">peor caso ±50%</div></div>
+  </div>`;
 
-  const rows2=scen.map(r=>`<tr style="cursor:default">
+  const chart=`<div class="card" style="margin-bottom:18px"><div class="card-h"><h3>Impacto en P&L por escenario de KC</h3><span class="hint">◀ pérdida · ganancia ▶ · USD</span></div>
+    <div class="chart-body">${divBars(scen.map(r=>({label:(r.s>0?'+':'')+(r.s*100)+'%',value:r.pnl})))}</div></div>`;
+
+  const scRows=scen.map(r=>{const fav=r.pnl>=0;return `<tr style="cursor:default">
     <td><b>${(r.s>0?'+':'')+(r.s*100)}%</b></td>
-    <td class="num"><b class="${r.pnl>=0?'pos-usd':'neg-usd'}">${usd(r.pnl)}</b></td>
-    <td class="num">${r.margin>0?`<span class="pill abierta">${usd(r.margin)}</span>`:'<span class="nemo">—</span>'}</td>
+    <td>${fav?'<span class="pill cerrada">favorable</span>':'<span class="pill abierta">adverso</span>'}</td>
+    <td class="num"><b class="${fav?'pos-usd':'neg-usd'}">${usd(r.pnl)}</b></td>
+    <td class="num">${r.margin>0?`<b class="neg-usd">${usd(r.margin)}</b>`:'<span class="nemo">—</span>'}</td>
+  </tr>`;}).join('');
+
+  const brk=pos.slice().sort((a,b)=>b.E*b.Pref-a.E*a.Pref).map(p=>`<tr style="cursor:pointer" onclick="go('/cobertura/${p.c.id}')">
+    <td><span class="cli">${esc(p.c.cliente||'—')}</span>${p.c.pedido?`<div class="ped">${esc(p.c.pedido)}</div>`:''}</td>
+    <td><span class="posbadge">${esc(p.c.mes)} ${p.c.anio}</span> <span class="nemo">${nemo(p.c)}</span></td>
+    <td>${p.dir>0?'<span class="pill cerrada">Largo</span>':'<span class="pill abierta">Corto</span>'}</td>
+    <td class="num">${lot(p.lotes)}</td><td class="num">${usd(p.E*p.Pref)}</td>
+    <td class="num"><b class="neg-usd">${usd(-p.E*p.Pref*0.5)}</b></td>
   </tr>`).join('');
 
-  app.innerHTML=header('Riesgo','Escenarios de volatilidad','Sensibilidad de la exposición abierta del libro a movimientos del KC (±10 / 25 / 50%), para el análisis de flujo de caja.','')
-    +kpis+chart
-    +`<div class="card" style="padding:0;overflow:hidden;max-width:640px"><div class="tscroll"><table>
-      <thead><tr class="col"><th>Escenario KC</th><th class="num">P&L exposición abierta</th><th class="num">Llamado a margen</th></tr></thead>
-      <tbody>${rows2}</tbody>
-    </table></div></div>
-    <div class="card pad" style="margin-top:16px;max-width:640px">
-      <div class="row" style="gap:10px"><span class="lbl" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);font-weight:700">Margen inicial por lote (Hedge Point, USD)</span>
-        <input type="number" step="any" value="${margenLote??''}" placeholder="ej. 5000" style="width:120px;text-align:right" onchange="setMargenLote(this.value)"></div>
-      <div class="muted" style="margin-top:8px">Con ${lot(totLotes)} lotes abiertos, el margen inicial inmovilizado sería ${initMargin!=null?usd(initMargin):'—'}. El <b>peor caso (±50%)</b> = ${usd(worst.margin)} es el llamado a margen a incorporar en el <b>FCF mensual proyectado</b>.</div>
-    </div>
-    <div class="legend"><span>Exposición firmada por dirección: compra abierta = largo futuro (pierde si baja el KC); venta abierta = corto (pierde si sube). Precio de referencia = cierre de la posición (o precio de la pata si no hay cierre).</span></div>`;
+  app.innerHTML=header('Riesgo','Escenarios de volatilidad','Cuánto ganaría o perdería la exposición abierta del libro si el KC se mueve ±10 / 25 / 50%. El peor caso alimenta el flujo de caja mensual.','')
+    +kpis+banner+chart
+    +`<div class="charts" style="align-items:start">
+      <div class="card"><div class="card-h"><h3>Detalle por escenario</h3></div><div class="tscroll" style="padding:0 6px 6px">
+        <table><thead><tr class="col"><th>KC</th><th>Dirección</th><th class="num">P&L exposición</th><th class="num">Llamado a margen</th></tr></thead><tbody>${scRows}</tbody></table></div></div>
+      <div class="card pad"><div class="lbl" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);font-weight:700;margin-bottom:8px">Margen inicial (Hedge Point)</div>
+        <div class="row" style="gap:9px"><input type="number" step="any" value="${margenLote??''}" placeholder="USD por lote (ej. 5.000)" style="width:100%;text-align:right" onchange="setMargenLote(this.value)"></div>
+        <div class="muted" style="margin-top:10px">Con <b>${lot(totLotes)} lotes</b> abiertos, el margen inicial inmovilizado sería <b>${initMargin!=null?usd(initMargin):'—'}</b>. Súmalo al llamado a margen del peor caso para el requerimiento total de caja.</div>
+      </div></div>
+    <div class="card" style="margin-top:18px"><div class="card-h"><h3>Exposición por posición</h3><span class="hint">pérdida potencial si el KC va −50% en contra</span></div>
+      <div class="tscroll"><table><thead><tr class="col"><th>Cliente / Pedido</th><th>Posición</th><th>Dirección</th><th class="num">Lotes</th><th class="num">Nocional</th><th class="num">Pérdida @ 50% adverso</th></tr></thead><tbody>${brk}</tbody></table></div></div>
+    <div class="legend"><span>Dirección: <b>largo</b> (compra abierta, pierde si baja el KC) · <b>corto</b> (venta abierta, pierde si sube). Precio de referencia = cierre de la posición, o el precio de la pata si aún no hay cierre.</span></div>`;
 }
 
 /* ============ FORM ============ */
