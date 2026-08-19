@@ -130,6 +130,7 @@
       <a data-v="libro" onclick="go('/libro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="12" y="6" width="3" height="12"/><rect x="17" y="13" width="3" height="5"/></svg>Dashboard</a>
       <a data-v="nueva" onclick="go('/nueva')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nueva cobertura</a>
       <a data-v="cierre" onclick="go('/cierre')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Cierre de mes</a>
+      <a data-v="riesgo" onclick="go('/riesgo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 20h20L12 2z"/><path d="M12 9v5M12 17h.01"/></svg>Escenarios</a>
       <a data-v="fx" onclick="go('/fx')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>Coberturas FX</a>
     </nav>
     <div class="side-foot"><b>MVP · v3</b><br>Datos en tu navegador.<br>Prototipo para pruebas.</div>
@@ -255,6 +256,7 @@ function render(){
   if(view==='editar'&&id)return renderForm(app,id);
   if(view==='cobertura'&&id)return renderDetalle(app,id);
   if(view==='cierre')return renderCierre(app);
+  if(view==='riesgo')return renderRiesgo(app);
   if(view==='fx')return renderFx(app);
   return renderLibro(app);
 }
@@ -381,6 +383,74 @@ function renderCierre(app){
 }
 function setCierre(pk,v){const db=loadDb();db.cierres=db.cierres||{};if(v===''||v==null)delete db.cierres[pk];else db.cierres[pk]=Number(v);saveDb(db);render();}
 function setSigma(pk,v){const db=loadDb();db.sigmas=db.sigmas||{};if(v===''||v==null)delete db.sigmas[pk];else db.sigmas[pk]=Number(v)/100;saveDb(db);render();}
+function setMargenLote(v){const db=loadDb();if(v===''||v==null)delete db.margenLote;else db.margenLote=Number(v);saveDb(db);render();}
+
+/* --- Cierre PARCIAL (fraccionar): cierra una fraccion y deja el resto abierto --- */
+function submitParcial(e,id){
+  e.preventDefault();const f=e.target,db=loadDb();
+  const i=db.coberturas.findIndex(x=>x.id===id);if(i<0)return false;
+  const c=db.coberturas[i];
+  const openSide=legOk(c.compra)?'compra':'venta';      // pata existente
+  const closeSide=openSide==='compra'?'venta':'compra';  // pata que se agrega
+  const openLeg=c[openSide];
+  const qty=Math.min(Number(val(f,'p_qty')),openLeg.sacos60);
+  if(!(qty>0))return false;
+  const closeLeg={codigoHP:strOrNull(val(f,'p_codigoHP')),fecha:strOrNull(val(f,'p_fecha')),sacos60:qty,precio:Number(val(f,'p_precio'))};
+  const closed={...structuredClone(c),id:uid()};
+  closed[openSide]={...openLeg,sacos60:qty};
+  closed[closeSide]=closeLeg;
+  db.coberturas.push(closed);
+  const rem=openLeg.sacos60-qty;
+  if(rem>0.0001)db.coberturas[i]={...c,[openSide]:{...openLeg,sacos60:rem}};
+  else db.coberturas.splice(i,1);
+  saveDb(db);go('/cobertura/'+closed.id);return false;
+}
+
+/* ============ RIESGO / ESCENARIOS DE VOLATILIDAD ============ */
+function renderRiesgo(app){
+  const db=loadDb();
+  const abiertas=db.coberturas.filter(c=>coberturaEstado(c)==='ABIERTA');
+  let totLb=0,totLotes=0,totNot=0;
+  const pos=abiertas.map(c=>{const leg=legOk(c.compra)?c.compra:(legOk(c.venta)?c.venta:null);if(!leg)return null;
+    const dir=legOk(c.compra)?1:-1; // compra abierta = long futuro
+    const lotes=sacos60ToLotes(leg.sacos60),E=lotes*KC_CONTRACT_LB,Pref=(db.cierres||{})[posKey(c)]??leg.precio;
+    totLb+=E;totLotes+=lotes;totNot+=E*Pref;return{dir,E,Pref};}).filter(Boolean);
+  const SC=[-0.5,-0.25,-0.1,0.1,0.25,0.5];
+  const scen=SC.map(s=>{const pnl=pos.reduce((a,p)=>a+p.dir*p.E*p.Pref*s,0);return{s,pnl,margin:pnl<0?-pnl:0};});
+  const worst=scen.reduce((w,r)=>r.pnl<w.pnl?r:w,{pnl:Infinity,s:0});
+  const margenLote=db.margenLote??null, initMargin=margenLote!=null?totLotes*margenLote:null;
+
+  if(pos.length===0){app.innerHTML=header('Riesgo','Escenarios de volatilidad','Sensibilidad de la exposición abierta a movimientos del KC.','')+`<div class="empty">No hay posiciones abiertas: sin exposición direccional al KC ahora mismo.</div>`;return;}
+
+  const kpis=`<div class="kpis">
+    <div class="kpi accent"><div class="lbl">Exposición abierta</div><div class="big">${lot(totLotes)}</div><div class="foot">lotes · ${fmt(totLb)} lb</div></div>
+    <div class="kpi"><div class="lbl">Nocional abierto</div><div class="big">${usd(totNot)}</div><div class="foot">${abiertas.length} posiciones</div></div>
+    <div class="kpi warn"><div class="lbl">Peor caso ±50%</div><div class="big neg-usd">${usd(worst.pnl)}</div><div class="foot">llamado a margen ${usd(worst.margin)} → FCF</div></div>
+    <div class="kpi val"><div class="lbl">Margen inicial</div><div class="big">${initMargin!=null?usd(initMargin):'—'}</div><div class="foot">${margenLote!=null?`$${money0(margenLote)}/lote`:'define $/lote abajo'}</div></div>
+  </div>`;
+
+  const chart=`<div class="card" style="margin-bottom:18px"><div class="card-h"><h3>P&L de la exposición abierta por escenario</h3><span class="hint">movimiento del KC · USD</span></div>
+    <div class="chart-body">${hbars(scen.map(r=>({label:(r.s>0?'+':'')+(r.s*100)+'%',value:r.pnl})),{labelW:70})}</div></div>`;
+
+  const rows2=scen.map(r=>`<tr style="cursor:default">
+    <td><b>${(r.s>0?'+':'')+(r.s*100)}%</b></td>
+    <td class="num"><b class="${r.pnl>=0?'pos-usd':'neg-usd'}">${usd(r.pnl)}</b></td>
+    <td class="num">${r.margin>0?`<span class="pill abierta">${usd(r.margin)}</span>`:'<span class="nemo">—</span>'}</td>
+  </tr>`).join('');
+
+  app.innerHTML=header('Riesgo','Escenarios de volatilidad','Sensibilidad de la exposición abierta del libro a movimientos del KC (±10 / 25 / 50%), para el análisis de flujo de caja.','')
+    +kpis+chart
+    +`<div class="card" style="padding:0;overflow:hidden;max-width:640px"><div class="tscroll"><table>
+      <thead><tr class="col"><th>Escenario KC</th><th class="num">P&L exposición abierta</th><th class="num">Llamado a margen</th></tr></thead>
+      <tbody>${rows2}</tbody>
+    </table></div></div>
+    <div class="card pad" style="margin-top:16px;max-width:640px">
+      <div class="row" style="gap:10px"><span class="lbl" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);font-weight:700">Margen inicial por lote (Hedge Point, USD)</span>
+        <input type="number" step="any" value="${margenLote??''}" placeholder="ej. 5000" style="width:120px;text-align:right" onchange="setMargenLote(this.value)"></div>
+      <div class="muted" style="margin-top:8px">Con ${lot(totLotes)} lotes abiertos, el margen inicial inmovilizado sería ${initMargin!=null?usd(initMargin):'—'}. El <b>peor caso (±50%)</b> = ${usd(worst.margin)} es el llamado a margen a incorporar en el <b>FCF mensual proyectado</b>.</div>
+    </div>
+    <div class="legend"><span>Exposición firmada por dirección: compra abierta = largo futuro (pierde si baja el KC); venta abierta = corto (pierde si sube). Precio de referencia = cierre de la posición (o precio de la pata si no hay cierre).</span></div>`;
+}
 
 /* ============ FORM ============ */
 function renderForm(app,id){
@@ -480,6 +550,15 @@ function renderDetalle(app,id){
       ${legCard('Compra — long futuro',c.compra,'Cuando vendemos al cliente, compramos el futuro.')}
       ${legCard('Venta — short futuro',c.venta,'Cuando compramos el café, vendemos el futuro y cerramos.')}
     </div>
+    ${est==='ABIERTA'?`<fieldset style="margin-top:14px"><legend>Cerrar parcial · fraccionar</legend>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:9px">Cierra solo una fracción con la pata de <b>${legOk(c.compra)?'venta':'compra'}</b>; el resto (${fmt((legOk(c.compra)?c.compra:c.venta).sacos60)} sacos) queda como cobertura abierta. Útil cuando no se compra todo el pergamino del pedido de una vez.</div>
+      <form onsubmit="return submitParcial(event,'${c.id}')" class="row" style="gap:9px">
+        <input name="p_codigoHP" placeholder="Cód. HP (${legOk(c.compra)?'venta':'compra'})" style="width:150px">
+        <input name="p_fecha" type="date">
+        <input name="p_qty" type="number" step="any" required placeholder="sacos 60 a cerrar" value="${(legOk(c.compra)?c.compra:c.venta).sacos60}" style="width:150px">
+        <input name="p_precio" type="number" step="any" required placeholder="precio USD/lb" style="width:140px">
+        <button class="btn-dark">Cerrar fracción</button>
+      </form></fieldset>`:''}
     <div style="display:flex;gap:10px;margin-top:16px">
       <button class="btn-dark" onclick="go('/editar/${c.id}')">✎ Editar / completar pata</button>
       <button class="btn-danger" onclick="borrarCobertura('${c.id}')">🗑 Borrar</button>
